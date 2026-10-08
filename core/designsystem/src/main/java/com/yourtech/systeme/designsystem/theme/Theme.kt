@@ -20,21 +20,24 @@ import com.yourtech.systeme.designsystem.R
 
 /** YOURTECH SYSTEME brand palette. */
 object YT {
-    val Navy = Color(0xFF071426)
-    val NavyDeep = Color(0xFF040C18)
-    val Surface = Color(0xFF101F35)
-    val SurfaceHigh = Color(0xFF16294A)
-    val Outline = Color(0xFF223A5E)
+    // Deep, neutral navy surfaces; one brand blue; a soft "ice" accent used sparingly; champagne for premium details.
+    val Navy = Color(0xFF08111F)
+    val NavyDeep = Color(0xFF050B15)
+    val Surface = Color(0xFF0F1A2B)
+    val SurfaceHigh = Color(0xFF162337)
+    val Outline = Color(0xFF243247)
     val Blue = Color(0xFF176BFF)
-    val Cyan = Color(0xFF00D9FF)
+    /** Accent (was electric cyan): a calm light blue, never neon. */
+    val Cyan = Color(0xFF9CC2FF)
+    val Gold = Color(0xFFC9AE7C)
     val White = Color(0xFFFFFFFF)
-    val TextMuted = Color(0xFF9BB0CC)
-    val Success = Color(0xFF22C55E)
-    val Warning = Color(0xFFF5A524)
-    val Danger = Color(0xFFFF5470)
-    val Violet = Color(0xFF7C5CFF)
-    val Glass = Color(0x1AFFFFFF)
-    val GlassBorder = Color(0x26FFFFFF)
+    val TextMuted = Color(0xFF8E9BB0)
+    val Success = Color(0xFF3DBE7A)
+    val Warning = Color(0xFFE0A84A)
+    val Danger = Color(0xFFE5677A)
+    val Violet = Color(0xFF8F86D6)
+    val Glass = Color(0x0FFFFFFF)
+    val GlassBorder = Color(0x1AFFFFFF)
 }
 
 val Tajawal = FontFamily(
@@ -48,8 +51,8 @@ private fun style(size: Int, weight: FontWeight, line: Int = (size * 1.35f).toIn
     TextStyle(fontFamily = Tajawal, fontWeight = weight, fontSize = size.sp, lineHeight = line.sp, letterSpacing = spacing.sp)
 
 val YTTypography = Typography(
-    displaySmall = style(34, FontWeight.ExtraBold),
-    headlineLarge = style(30, FontWeight.ExtraBold),
+    displaySmall = style(34, FontWeight.Bold),
+    headlineLarge = style(30, FontWeight.Bold),
     headlineMedium = style(26, FontWeight.Bold),
     headlineSmall = style(22, FontWeight.Bold),
     titleLarge = style(20, FontWeight.Bold),
@@ -66,12 +69,12 @@ val YTTypography = Typography(
 private val Scheme = darkColorScheme(
     primary = YT.Blue,
     onPrimary = YT.White,
-    primaryContainer = Color(0xFF0E3A8A),
+    primaryContainer = Color(0xFF123B80),
     onPrimaryContainer = Color(0xFFD6E4FF),
     secondary = YT.Cyan,
     onSecondary = YT.Navy,
-    secondaryContainer = Color(0xFF00394A),
-    onSecondaryContainer = Color(0xFFB8F4FF),
+    secondaryContainer = Color(0xFF1B2C47),
+    onSecondaryContainer = Color(0xFFDCE7FF),
     tertiary = YT.Violet,
     background = YT.Navy,
     onBackground = YT.White,
@@ -83,9 +86,9 @@ private val Scheme = darkColorScheme(
     surfaceContainerHigh = YT.SurfaceHigh,
     surfaceContainerLow = YT.Navy,
     surfaceContainerLowest = YT.NavyDeep,
-    surfaceContainerHighest = Color(0xFF1C3358),
+    surfaceContainerHighest = Color(0xFF1D2B42),
     outline = YT.Outline,
-    outlineVariant = Color(0xFF18304F),
+    outlineVariant = Color(0xFF1A2638),
     error = YT.Danger,
 )
 

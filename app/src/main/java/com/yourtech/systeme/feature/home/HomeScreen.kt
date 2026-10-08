@@ -2,6 +2,8 @@ package com.yourtech.systeme.feature.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -182,7 +184,8 @@ fun HomeScreen(
                     items(s.promotions, key = { it.id }) { p ->
                         Row(
                             Modifier.width(300.dp).clip(RoundedCornerShape(22.dp))
-                                .background(Brush.linearGradient(listOf(YT.Blue, Color(0xFF0A3D91))))
+                                .background(Color(0xFF14284A))
+                                .border(1.dp, YT.Gold.copy(alpha = 0.35f), RoundedCornerShape(22.dp))
                                 .pressable { p.serviceCategoryId?.let(onSolution) ?: p.productId?.let(onProduct) }
                                 .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -255,11 +258,12 @@ fun HomeScreen(
 private fun Hero(onInstallation: () -> Unit, onWhatsApp: () -> Unit) {
     Box(
         Modifier.padding(20.dp).fillMaxWidth().clip(RoundedCornerShape(28.dp))
-            .background(Brush.linearGradient(listOf(Color(0xFF0E2E63), Color(0xFF0A1B36), YT.Navy))),
+            .background(Brush.verticalGradient(listOf(Color(0xFF15233A), YT.Surface)))
+            .border(1.dp, YT.GlassBorder, RoundedCornerShape(28.dp)),
     ) {
         SecurityIllustration("shield", Modifier.align(Alignment.TopEnd).size(118.dp).padding(6.dp), background = false)
         Column(Modifier.padding(20.dp)) {
-            Text(stringResource(R.string.hero_kicker).uppercase(), style = MaterialTheme.typography.labelMedium, color = YT.Cyan)
+            Text(stringResource(R.string.hero_kicker).uppercase(), style = MaterialTheme.typography.labelMedium, color = YT.Gold, letterSpacing = 1.2.sp)
             Spacer(Modifier.height(8.dp))
             Text(stringResource(R.string.hero_title), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.fillMaxWidth(0.68f))
             Spacer(Modifier.height(8.dp))

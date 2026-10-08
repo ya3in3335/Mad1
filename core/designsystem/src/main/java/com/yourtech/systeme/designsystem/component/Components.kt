@@ -70,7 +70,7 @@ fun Modifier.pressable(enabled: Boolean = true, haptic: Boolean = true, onClick:
         }
 }
 
-/** Frosted glass card (subtle, not neon). */
+/** Premium card: solid surface, faint top light and a hairline border (no glow). */
 @Composable
 fun GlassCard(
     modifier: Modifier = Modifier,
@@ -82,7 +82,8 @@ fun GlassCard(
     Column(
         modifier
             .clip(shape)
-            .background(Brush.linearGradient(listOf(Color(0x1FFFFFFF), Color(0x0AFFFFFF)), start = Offset.Zero, end = Offset(600f, 600f)))
+            .background(YT.Surface)
+            .background(Brush.verticalGradient(listOf(Color(0x0AFFFFFF), Color.Transparent), endY = 220f))
             .border(1.dp, if (highlight != Color.Transparent) highlight else YT.GlassBorder, shape)
             .padding(padding),
         content = content,
@@ -96,13 +97,13 @@ fun GradientButton(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     enabled: Boolean = true,
-    colors: List<Color> = listOf(YT.Blue, Color(0xFF0FA3FF)),
+    colors: List<Color> = listOf(Color(0xFF2A78FF), YT.Blue),
 ) {
     Row(
         modifier
             .heightIn(min = 52.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(if (enabled) Brush.horizontalGradient(colors) else Brush.horizontalGradient(listOf(YT.Outline, YT.Outline)))
+            .background(if (enabled) Brush.verticalGradient(colors) else Brush.horizontalGradient(listOf(YT.Outline, YT.Outline)))
             .pressable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 18.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.Center,
@@ -119,7 +120,7 @@ fun OutlineButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
         modifier
             .heightIn(min = 52.dp)
             .clip(RoundedCornerShape(16.dp))
-            .border(1.2.dp, tint.copy(alpha = 0.7f), RoundedCornerShape(16.dp))
+            .border(1.dp, tint.copy(alpha = 0.45f), RoundedCornerShape(16.dp))
             .pressable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.Center,
@@ -133,7 +134,7 @@ fun OutlineButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
 @Composable
 fun SectionHeader(title: String, modifier: Modifier = Modifier, action: String? = null, onAction: (() -> Unit)? = null) {
     Row(modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(width = 4.dp, height = 18.dp).clip(RoundedCornerShape(2.dp)).background(Brush.verticalGradient(listOf(YT.Cyan, YT.Blue))))
+        Box(Modifier.size(width = 3.dp, height = 16.dp).clip(RoundedCornerShape(2.dp)).background(YT.Gold))
         Spacer(Modifier.width(10.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
         if (action != null && onAction != null) TextButton(onClick = onAction) { Text(action, color = YT.Cyan) }
@@ -155,7 +156,7 @@ fun StatusPill(text: String, color: Color, modifier: Modifier = Modifier) {
 @Composable
 fun IconTile(icon: ImageVector, tint: Color = YT.Cyan, modifier: Modifier = Modifier, size: Int = 44) {
     Box(
-        modifier.size(size.dp).clip(RoundedCornerShape((size / 3).dp)).background(tint.copy(alpha = 0.14f)),
+        modifier.size(size.dp).clip(RoundedCornerShape((size / 3).dp)).background(tint.copy(alpha = 0.10f)).border(1.dp, tint.copy(alpha = 0.18f), RoundedCornerShape((size / 3).dp)),
         contentAlignment = Alignment.Center,
     ) { Icon(icon, null, tint = tint, modifier = Modifier.size((size * 0.52f).dp)) }
 }
@@ -165,10 +166,10 @@ fun Chip(text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifie
     Text(
         text,
         style = MaterialTheme.typography.labelLarge,
-        color = if (selected) YT.Navy else YT.White,
+        color = if (selected) YT.Navy else YT.White.copy(alpha = 0.88f),
         modifier = modifier
             .clip(RoundedCornerShape(50))
-            .background(if (selected) Brush.horizontalGradient(listOf(YT.Cyan, Color(0xFF5BE7FF))) else Brush.horizontalGradient(listOf(YT.Glass, YT.Glass)))
+            .background(if (selected) YT.White else YT.Surface)
             .border(1.dp, if (selected) Color.Transparent else YT.GlassBorder, RoundedCornerShape(50))
             .pressable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 9.dp),
@@ -194,12 +195,12 @@ fun SkeletonBox(modifier: Modifier) = Box(modifier.shimmer())
 fun EmptyState(icon: ImageVector, title: String, message: String, modifier: Modifier = Modifier, action: String? = null, onAction: (() -> Unit)? = null) {
     Column(modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         val tr = rememberInfiniteTransition(label = "empty")
-        val r by tr.animateFloat(0.9f, 1.08f, infiniteRepeatable(tween(1600), RepeatMode.Reverse), label = "pulse")
+        val r by tr.animateFloat(0.97f, 1.03f, infiniteRepeatable(tween(2400), RepeatMode.Reverse), label = "breath")
         Box(
-            Modifier.size(110.dp).graphicsLayer { scaleX = r; scaleY = r }.clip(CircleShape)
-                .background(Brush.radialGradient(listOf(YT.Blue.copy(alpha = 0.35f), Color.Transparent))),
+            Modifier.size(96.dp).graphicsLayer { scaleX = r; scaleY = r }.clip(CircleShape)
+                .background(YT.Surface).border(1.dp, YT.GlassBorder, CircleShape),
             contentAlignment = Alignment.Center,
-        ) { Icon(icon, null, tint = YT.Cyan, modifier = Modifier.size(48.dp)) }
+        ) { Icon(icon, null, tint = YT.Cyan, modifier = Modifier.size(40.dp)) }
         Spacer(Modifier.height(16.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
         Spacer(Modifier.height(6.dp))

@@ -17,8 +17,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.rotate
 import com.yourtech.systeme.designsystem.theme.YT
 import kotlin.math.PI
@@ -26,193 +28,237 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * Animated line illustrations for security solutions and equipment.
- * Keys: camera, dome, recorder, alarm, keypad, fingerprint, card, intercom, home, barrier, tools, shield.
+ * Animated line illustrations for security solutions and equipment, drawn in a calm
+ * silver-and-blue line style. Keys: camera, dome, recorder, alarm, keypad, fingerprint, card,
+ * intercom, home, barrier, tools, pin, shield (default).
  */
 @Composable
 fun SecurityIllustration(key: String?, modifier: Modifier = Modifier, animated: Boolean = true, background: Boolean = true) {
     val t = if (animated) {
         val tr = rememberInfiniteTransition(label = "illu")
-        val v by tr.animateFloat(0f, 1f, infiniteRepeatable(tween(2600, easing = LinearEasing), RepeatMode.Restart), label = "illuT")
+        val v by tr.animateFloat(0f, 1f, infiniteRepeatable(tween(4200, easing = LinearEasing), RepeatMode.Restart), label = "illuT")
         v
-    } else 0.35f
+    } else 0.3f
     Canvas(modifier) {
         if (background) {
-            drawRect(Brush.linearGradient(listOf(Color(0xFF0D2244), Color(0xFF071426)), start = Offset.Zero, end = Offset(size.width, size.height)))
-            // subtle grid
-            val step = size.minDimension / 8f
-            var x = step
-            while (x < size.width) { drawLine(Color.White.copy(alpha = 0.035f), Offset(x, 0f), Offset(x, size.height)); x += step }
-            var y = step
-            while (y < size.height) { drawLine(Color.White.copy(alpha = 0.035f), Offset(0f, y), Offset(size.width, y)); y += step }
-            drawCircle(Brush.radialGradient(listOf(YT.Blue.copy(alpha = 0.35f), Color.Transparent)), radius = size.minDimension * 0.55f)
+            drawRect(Brush.verticalGradient(listOf(BgTop, BgBottom)))
+            drawCircle(
+                Brush.radialGradient(listOf(Color.White.copy(alpha = 0.05f), Color.Transparent), center = center, radius = size.minDimension * 0.5f),
+                radius = size.minDimension * 0.5f,
+            )
         }
         val s = size.minDimension
         val o = Offset((size.width - s) / 2f, (size.height - s) / 2f)
-        translateSquare(o, s) { drawIllustration(key ?: "shield", t) }
+        Square(this, o, s).draw(key ?: "shield", t)
     }
 }
 
-private inline fun DrawScope.translateSquare(o: Offset, s: Float, block: SquareScope.() -> Unit) {
-    SquareScope(this, o, s).block()
-}
+private val BgTop = Color(0xFF132036)
+private val BgBottom = Color(0xFF0A1322)
+private val Line = Color(0xFFD3DCE9)
+private val Body = Color(0xFF1B2A44)
 
-private class SquareScope(val ds: DrawScope, val o: Offset, val s: Float) {
+private class Square(val ds: DrawScope, val o: Offset, val s: Float) {
     fun p(x: Float, y: Float) = Offset(o.x + x * s, o.y + y * s)
     fun sz(w: Float, h: Float) = Size(w * s, h * s)
-    val line get() = s * 0.022f
-    val accent = Brush.linearGradient(listOf(YT.Blue, YT.Cyan))
+    fun r(v: Float) = CornerRadius(v * s)
+    val w = s * 0.02f
+    val stroke get() = Stroke(width = w, cap = StrokeCap.Round, join = StrokeJoin.Round)
+    fun thin(f: Float = 0.6f) = Stroke(width = w * f, cap = StrokeCap.Round)
 
-    fun drawIllustration(key: String, t: Float) = with(ds) {
-        val st = Stroke(width = line, cap = StrokeCap.Round)
+    /** 0 → 1 → 0 smooth wave over the cycle. */
+    fun wave(t: Float, phase: Float = 0f) = 0.5f - 0.5f * cos(((t + phase) * 2 * PI)).toFloat()
+
+    fun path(vararg pts: Pair<Float, Float>, closed: Boolean = true) = Path().apply {
+        pts.forEachIndexed { i, (x, y) -> val q = p(x, y); if (i == 0) moveTo(q.x, q.y) else lineTo(q.x, q.y) }
+        if (closed) close()
+    }
+
+    fun box(x: Float, y: Float, bw: Float, bh: Float, radius: Float, fill: Color = Body) = with(ds) {
+        drawRoundRect(fill, topLeft = p(x, y), size = sz(bw, bh), cornerRadius = r(radius))
+        drawRoundRect(Line, topLeft = p(x, y), size = sz(bw, bh), cornerRadius = r(radius), style = stroke)
+    }
+
+    fun draw(key: String, t: Float) = with(ds) {
         when (key) {
             "camera" -> {
-                // field of view cone
-                val cone = Path().apply { moveTo(p(0.36f, 0.47f).x, p(0.36f, 0.47f).y); lineTo(p(0.05f, 0.30f + 0.04f * sin(t * 2 * PI).toFloat()).x, p(0.05f, 0.30f).y); lineTo(p(0.05f, 0.78f).x, p(0.05f, 0.78f).y); close() }
-                drawPath(cone, Brush.horizontalGradient(listOf(YT.Cyan.copy(alpha = 0.0f), YT.Cyan.copy(alpha = 0.22f)), startX = p(0.05f, 0f).x, endX = p(0.36f, 0f).x))
-                rotate(-12f, pivot = p(0.55f, 0.45f)) {
-                    drawRoundRect(accent, topLeft = p(0.34f, 0.36f), size = sz(0.44f, 0.2f), cornerRadius = CornerRadius(s * 0.05f), style = st)
-                    drawRoundRect(YT.Surface, topLeft = p(0.35f, 0.37f), size = sz(0.42f, 0.18f), cornerRadius = CornerRadius(s * 0.05f))
-                    drawCircle(YT.Cyan, radius = s * 0.06f, center = p(0.38f, 0.46f), style = st)
-                    drawCircle(YT.Blue, radius = s * 0.025f, center = p(0.38f, 0.46f))
-                    drawCircle(if (t < 0.5f) YT.Danger else YT.Danger.copy(alpha = 0.25f), radius = s * 0.012f, center = p(0.72f, 0.42f))
+                // Wall plate and arm (fixed)
+                box(0.76f, 0.30f, 0.07f, 0.30f, 0.02f)
+                drawLine(Line, p(0.62f, 0.45f), p(0.76f, 0.45f), strokeWidth = w * 1.4f, cap = StrokeCap.Round)
+                drawCircle(Line, radius = s * 0.022f, center = p(0.62f, 0.45f))
+                // Camera head pans slowly around the joint
+                rotate(-6f + 10f * wave(t), pivot = p(0.62f, 0.45f)) {
+                    val cone = path(0.24f to 0.38f, 0.03f to 0.24f, 0.03f to 0.58f)
+                    drawPath(cone, Brush.horizontalGradient(listOf(Color.Transparent, YT.Blue.copy(alpha = 0.28f)), startX = p(0.03f, 0f).x, endX = p(0.24f, 0f).x))
+                    drawRoundRect(Line.copy(alpha = 0.85f), topLeft = p(0.22f, 0.25f), size = sz(0.44f, 0.04f), cornerRadius = r(0.02f))
+                    box(0.24f, 0.30f, 0.40f, 0.16f, 0.05f)
+                    drawCircle(Color(0xFF0B1424), radius = s * 0.05f, center = p(0.30f, 0.38f))
+                    drawCircle(Line, radius = s * 0.05f, center = p(0.30f, 0.38f), style = stroke)
+                    drawCircle(YT.Blue, radius = s * 0.024f, center = p(0.30f, 0.38f))
+                    drawCircle(Color.White.copy(alpha = 0.8f), radius = s * 0.008f, center = p(0.288f, 0.37f))
+                    drawCircle(YT.Danger.copy(alpha = 0.35f + 0.65f * wave(t * 2)), radius = s * 0.011f, center = p(0.58f, 0.36f))
                 }
-                drawLine(YT.TextMuted, p(0.62f, 0.55f), p(0.68f, 0.72f), strokeWidth = line, cap = StrokeCap.Round)
-                drawLine(YT.TextMuted, p(0.6f, 0.74f), p(0.82f, 0.74f), strokeWidth = line * 1.6f, cap = StrokeCap.Round)
             }
             "dome" -> {
-                drawLine(YT.TextMuted, p(0.22f, 0.36f), p(0.78f, 0.36f), strokeWidth = line * 1.6f, cap = StrokeCap.Round)
-                drawArc(accent, 0f, 180f, false, topLeft = p(0.26f, 0.18f), size = sz(0.48f, 0.38f), style = st)
-                drawArc(YT.Surface, 0f, 180f, true, topLeft = p(0.27f, 0.19f), size = sz(0.46f, 0.36f))
-                val a = t * 2 * PI
-                val lc = p(0.5f + 0.06f * cos(a).toFloat(), 0.44f)
-                drawCircle(YT.Cyan, radius = s * 0.055f, center = lc, style = st)
-                drawCircle(YT.Blue, radius = s * 0.022f, center = lc)
-                for (i in 1..3) {
-                    val k = (t + i / 3f) % 1f
-                    drawArc(YT.Cyan.copy(alpha = 0.35f * (1 - k)), 30f, 120f, false, topLeft = p(0.5f - 0.2f - 0.25f * k, 0.36f), size = sz(0.4f + 0.5f * k, 0.3f + 0.3f * k), style = Stroke(line * 0.7f))
+                drawLine(Line.copy(alpha = 0.5f), p(0.14f, 0.34f), p(0.86f, 0.34f), strokeWidth = w, cap = StrokeCap.Round)
+                box(0.27f, 0.34f, 0.46f, 0.06f, 0.02f)
+                drawArc(Body, 0f, 180f, true, topLeft = p(0.30f, 0.20f), size = sz(0.40f, 0.40f))
+                drawArc(Line, 0f, 180f, false, topLeft = p(0.30f, 0.20f), size = sz(0.40f, 0.40f), style = stroke)
+                val lens = p(0.5f + 0.07f * sin(t * 2 * PI).toFloat(), 0.49f)
+                drawCircle(Color(0xFF0B1424), radius = s * 0.045f, center = lens)
+                drawCircle(Line, radius = s * 0.045f, center = lens, style = thin(0.8f))
+                drawCircle(YT.Blue, radius = s * 0.02f, center = lens)
+                for (i in 0 until 2) {
+                    val rr = 0.30f + i * 0.09f
+                    drawArc(YT.Cyan.copy(alpha = 0.22f - i * 0.08f), 50f, 80f, false, topLeft = p(0.5f - rr, 0.40f - rr), size = sz(rr * 2, rr * 2), style = thin())
                 }
             }
             "recorder" -> {
-                for (row in 0 until 2) {
-                    val y = 0.34f + row * 0.2f
-                    drawRoundRect(accent, topLeft = p(0.18f, y), size = sz(0.64f, 0.15f), cornerRadius = CornerRadius(s * 0.025f), style = st)
-                    for (i in 0 until 4) {
-                        val on = ((t * 8).toInt() + i + row * 2) % 3 != 0
-                        drawCircle(if (on) YT.Cyan else YT.Outline, radius = s * 0.012f, center = p(0.26f + i * 0.05f, y + 0.075f))
-                    }
-                    drawLine(YT.TextMuted, p(0.56f, y + 0.05f), p(0.76f, y + 0.05f), strokeWidth = line * 0.6f)
-                    drawLine(YT.TextMuted, p(0.56f, y + 0.1f), p(0.76f, y + 0.1f), strokeWidth = line * 0.6f)
+                box(0.13f, 0.38f, 0.74f, 0.22f, 0.03f)
+                drawLine(Line.copy(alpha = 0.6f), p(0.60f, 0.41f), p(0.60f, 0.57f), strokeWidth = w * 0.6f)
+                for (i in 0 until 4) {
+                    val on = ((t * 8).toInt() + i) % 4 != 0
+                    val c = if (i == 0) YT.Danger.copy(alpha = 0.4f + 0.6f * wave(t * 2)) else if (on) YT.Cyan else Line.copy(alpha = 0.25f)
+                    drawCircle(c, radius = s * 0.012f, center = p(0.21f + i * 0.06f, 0.49f))
                 }
+                for (row in 0 until 2) {
+                    drawRoundRect(Line.copy(alpha = 0.18f), topLeft = p(0.64f, 0.42f + row * 0.075f), size = sz(0.19f, 0.05f), cornerRadius = r(0.01f))
+                    drawRoundRect(Line, topLeft = p(0.64f, 0.42f + row * 0.075f), size = sz(0.19f, 0.05f), cornerRadius = r(0.01f), style = thin())
+                }
+                drawLine(Line, p(0.20f, 0.62f), p(0.26f, 0.62f), strokeWidth = w * 1.2f, cap = StrokeCap.Round)
+                drawLine(Line, p(0.74f, 0.62f), p(0.80f, 0.62f), strokeWidth = w * 1.2f, cap = StrokeCap.Round)
             }
             "alarm" -> {
                 val bell = Path().apply {
                     moveTo(p(0.5f, 0.24f).x, p(0.5f, 0.24f).y)
-                    cubicTo(p(0.66f, 0.24f).x, p(0.66f, 0.24f).y, p(0.68f, 0.4f).x, p(0.68f, 0.4f).y, p(0.68f, 0.52f).x, p(0.68f, 0.52f).y)
-                    lineTo(p(0.74f, 0.64f).x, p(0.74f, 0.64f).y); lineTo(p(0.26f, 0.64f).x, p(0.26f, 0.64f).y); lineTo(p(0.32f, 0.52f).x, p(0.32f, 0.52f).y)
-                    cubicTo(p(0.32f, 0.4f).x, p(0.32f, 0.4f).y, p(0.34f, 0.24f).x, p(0.34f, 0.24f).y, p(0.5f, 0.24f).x, p(0.5f, 0.24f).y)
+                    cubicTo(p(0.64f, 0.24f).x, p(0.64f, 0.24f).y, p(0.67f, 0.38f).x, p(0.67f, 0.38f).y, p(0.67f, 0.50f).x, p(0.67f, 0.50f).y)
+                    lineTo(p(0.73f, 0.62f).x, p(0.73f, 0.62f).y); lineTo(p(0.27f, 0.62f).x, p(0.27f, 0.62f).y); lineTo(p(0.33f, 0.50f).x, p(0.33f, 0.50f).y)
+                    cubicTo(p(0.33f, 0.38f).x, p(0.33f, 0.38f).y, p(0.36f, 0.24f).x, p(0.36f, 0.24f).y, p(0.5f, 0.24f).x, p(0.5f, 0.24f).y)
+                    close()
                 }
-                rotate(8f * sin(t * 6 * PI).toFloat(), pivot = p(0.5f, 0.22f)) {
-                    drawPath(bell, YT.Surface); drawPath(bell, accent, style = st)
-                    drawCircle(YT.Cyan, radius = s * 0.035f, center = p(0.5f, 0.69f))
+                rotate(5f * sin(t * 4 * PI).toFloat(), pivot = p(0.5f, 0.20f)) {
+                    drawPath(bell, Body); drawPath(bell, Line, style = stroke)
+                    drawCircle(Line, radius = s * 0.022f, center = p(0.5f, 0.21f), style = thin())
+                    drawCircle(YT.Blue, radius = s * 0.032f, center = p(0.5f, 0.67f))
                 }
-                for (i in 0 until 3) {
-                    val k = (t + i / 3f) % 1f
-                    val a = 0.6f * (1 - k)
-                    drawArc(YT.Cyan.copy(alpha = a), -40f, 80f, false, topLeft = p(0.5f - 0.3f - 0.12f * k, 0.44f - 0.3f - 0.12f * k), size = sz(0.6f + 0.24f * k, 0.6f + 0.24f * k), style = Stroke(line * 0.8f, cap = StrokeCap.Round))
-                    drawArc(YT.Cyan.copy(alpha = a), 140f, 80f, false, topLeft = p(0.5f - 0.3f - 0.12f * k, 0.44f - 0.3f - 0.12f * k), size = sz(0.6f + 0.24f * k, 0.6f + 0.24f * k), style = Stroke(line * 0.8f, cap = StrokeCap.Round))
+                for (i in 0 until 2) {
+                    val k = (t + i * 0.5f) % 1f
+                    val rr = 0.28f + 0.1f * k
+                    val a = YT.Cyan.copy(alpha = 0.55f * (1 - k))
+                    drawArc(a, -30f, 60f, false, topLeft = p(0.5f - rr, 0.44f - rr), size = sz(rr * 2, rr * 2), style = thin(0.9f))
+                    drawArc(a, 150f, 60f, false, topLeft = p(0.5f - rr, 0.44f - rr), size = sz(rr * 2, rr * 2), style = thin(0.9f))
                 }
             }
             "keypad" -> {
-                drawRoundRect(YT.Surface, topLeft = p(0.3f, 0.16f), size = sz(0.4f, 0.68f), cornerRadius = CornerRadius(s * 0.05f))
-                drawRoundRect(accent, topLeft = p(0.3f, 0.16f), size = sz(0.4f, 0.68f), cornerRadius = CornerRadius(s * 0.05f), style = st)
-                drawRoundRect(YT.Cyan.copy(alpha = 0.25f), topLeft = p(0.36f, 0.22f), size = sz(0.28f, 0.08f), cornerRadius = CornerRadius(s * 0.015f))
-                val active = (t * 12).toInt() % 12
+                box(0.30f, 0.14f, 0.40f, 0.72f, 0.05f)
+                drawRoundRect(YT.Blue.copy(alpha = 0.25f), topLeft = p(0.36f, 0.21f), size = sz(0.28f, 0.09f), cornerRadius = r(0.015f))
+                for (i in 0 until 4) drawCircle(Line.copy(alpha = if ((t * 5).toInt() > i) 0.9f else 0.25f), radius = s * 0.009f, center = p(0.44f + i * 0.04f, 0.255f))
+                val active = (t * 6).toInt() % 12
                 for (i in 0 until 12) {
-                    val c = p(0.4f + (i % 3) * 0.1f, 0.4f + (i / 3) * 0.1f)
-                    drawCircle(if (i == active) YT.Cyan else YT.TextMuted.copy(alpha = 0.6f), radius = s * 0.022f, center = c)
+                    val c = p(0.40f + (i % 3) * 0.10f, 0.40f + (i / 3) * 0.10f)
+                    val on = i == active
+                    drawRoundRect(if (on) YT.Blue else Line.copy(alpha = 0.12f), topLeft = Offset(c.x - s * 0.03f, c.y - s * 0.03f), size = sz(0.06f, 0.06f), cornerRadius = r(0.015f))
+                    if (!on) drawRoundRect(Line.copy(alpha = 0.5f), topLeft = Offset(c.x - s * 0.03f, c.y - s * 0.03f), size = sz(0.06f, 0.06f), cornerRadius = r(0.015f), style = thin(0.5f))
                 }
             }
             "fingerprint" -> {
+                val scan = 0.22f + 0.56f * wave(t)
                 for (i in 0 until 6) {
-                    val r = 0.06f + i * 0.045f
-                    drawArc(accent, 200f - i * 4f, 140f + i * 8f, false, topLeft = p(0.5f - r, 0.52f - r), size = sz(r * 2, r * 2), style = Stroke(line * 0.8f, cap = StrokeCap.Round))
+                    val rr = 0.07f + i * 0.042f
+                    val col = if (0.52f - rr < scan) YT.Cyan else Line.copy(alpha = 0.75f)
+                    drawArc(col, 200f - i * 3f, 140f + i * 6f, false, topLeft = p(0.5f - rr, 0.54f - rr), size = sz(rr * 2, rr * 2), style = thin(0.9f))
                 }
-                val y = 0.22f + 0.56f * t
-                drawLine(Brush.horizontalGradient(listOf(Color.Transparent, YT.Cyan, Color.Transparent), startX = p(0.18f, 0f).x, endX = p(0.82f, 0f).x), p(0.18f, y), p(0.82f, y), strokeWidth = line * 1.2f)
+                drawLine(Line.copy(alpha = 0.75f), p(0.5f, 0.54f), p(0.5f, 0.62f), strokeWidth = w * 0.9f, cap = StrokeCap.Round)
+                drawLine(
+                    Brush.horizontalGradient(listOf(Color.Transparent, YT.Blue, Color.Transparent), startX = p(0.18f, 0f).x, endX = p(0.82f, 0f).x),
+                    p(0.18f, scan), p(0.82f, scan), strokeWidth = w,
+                )
             }
             "card" -> {
-                rotate(-8f, pivot = p(0.45f, 0.55f)) {
-                    drawRoundRect(YT.Surface, topLeft = p(0.16f, 0.36f), size = sz(0.5f, 0.32f), cornerRadius = CornerRadius(s * 0.04f))
-                    drawRoundRect(accent, topLeft = p(0.16f, 0.36f), size = sz(0.5f, 0.32f), cornerRadius = CornerRadius(s * 0.04f), style = st)
-                    drawRoundRect(YT.Warning.copy(alpha = 0.8f), topLeft = p(0.22f, 0.44f), size = sz(0.09f, 0.07f), cornerRadius = CornerRadius(s * 0.01f))
-                    drawLine(YT.TextMuted, p(0.22f, 0.6f), p(0.48f, 0.6f), strokeWidth = line * 0.6f)
+                box(0.62f, 0.20f, 0.22f, 0.60f, 0.04f)
+                drawCircle(YT.Success.copy(alpha = 0.4f + 0.6f * wave(t)), radius = s * 0.016f, center = p(0.73f, 0.30f))
+                drawCircle(Line.copy(alpha = 0.4f), radius = s * 0.05f, center = p(0.73f, 0.52f), style = thin())
+                for (i in 0 until 2) {
+                    val k = (t + i * 0.5f) % 1f
+                    val rr = 0.08f + 0.12f * k
+                    drawArc(YT.Cyan.copy(alpha = 0.6f * (1 - k)), 145f, 70f, false, topLeft = p(0.73f - rr, 0.52f - rr), size = sz(rr * 2, rr * 2), style = thin(0.9f))
                 }
-                for (i in 0 until 3) {
-                    val k = (t + i / 3f) % 1f
-                    drawArc(YT.Cyan.copy(alpha = 0.8f * (1 - k)), -50f, 100f, false, topLeft = p(0.5f - 0.1f * (1 + k * 2), 0.42f - 0.1f * (1 + k * 2)), size = sz(0.2f * (1 + k * 2), 0.2f * (1 + k * 2)), style = Stroke(line, cap = StrokeCap.Round))
+                rotate(-10f, pivot = p(0.36f, 0.56f)) {
+                    box(0.12f, 0.42f, 0.46f, 0.29f, 0.035f)
+                    drawRoundRect(YT.Gold.copy(alpha = 0.85f), topLeft = p(0.18f, 0.49f), size = sz(0.08f, 0.065f), cornerRadius = r(0.01f))
+                    drawLine(Line.copy(alpha = 0.5f), p(0.18f, 0.63f), p(0.44f, 0.63f), strokeWidth = w * 0.6f, cap = StrokeCap.Round)
                 }
             }
             "intercom" -> {
-                drawRoundRect(YT.Surface, topLeft = p(0.33f, 0.14f), size = sz(0.34f, 0.72f), cornerRadius = CornerRadius(s * 0.05f))
-                drawRoundRect(accent, topLeft = p(0.33f, 0.14f), size = sz(0.34f, 0.72f), cornerRadius = CornerRadius(s * 0.05f), style = st)
-                drawCircle(YT.Cyan, radius = s * 0.04f, center = p(0.5f, 0.26f), style = st)
-                drawCircle(YT.Blue, radius = s * 0.015f, center = p(0.5f, 0.26f))
-                for (i in 0 until 4) drawLine(YT.TextMuted, p(0.42f, 0.4f + i * 0.04f), p(0.58f, 0.4f + i * 0.04f), strokeWidth = line * 0.6f, cap = StrokeCap.Round)
-                val pulse = 0.5f + 0.5f * sin(t * 2 * PI).toFloat()
-                drawCircle(YT.Cyan.copy(alpha = 0.3f + 0.5f * pulse), radius = s * 0.055f, center = p(0.5f, 0.7f))
-                drawCircle(YT.White, radius = s * 0.03f, center = p(0.5f, 0.7f))
+                box(0.33f, 0.14f, 0.34f, 0.72f, 0.05f)
+                drawCircle(Color(0xFF0B1424), radius = s * 0.04f, center = p(0.5f, 0.26f))
+                drawCircle(Line, radius = s * 0.04f, center = p(0.5f, 0.26f), style = thin(0.8f))
+                drawCircle(YT.Blue, radius = s * 0.016f, center = p(0.5f, 0.26f))
+                for (i in 0 until 4) drawLine(Line.copy(alpha = 0.55f), p(0.43f, 0.40f + i * 0.04f), p(0.57f, 0.40f + i * 0.04f), strokeWidth = w * 0.6f, cap = StrokeCap.Round)
+                val k = wave(t)
+                drawCircle(YT.Blue.copy(alpha = 0.15f + 0.25f * k), radius = s * (0.055f + 0.015f * k), center = p(0.5f, 0.70f))
+                drawCircle(Line, radius = s * 0.035f, center = p(0.5f, 0.70f))
             }
             "home" -> {
-                val house = Path().apply {
-                    moveTo(p(0.2f, 0.5f).x, p(0.2f, 0.5f).y); lineTo(p(0.5f, 0.24f).x, p(0.5f, 0.24f).y); lineTo(p(0.8f, 0.5f).x, p(0.8f, 0.5f).y)
-                    lineTo(p(0.74f, 0.5f).x, p(0.74f, 0.5f).y); lineTo(p(0.74f, 0.8f).x, p(0.74f, 0.8f).y); lineTo(p(0.26f, 0.8f).x, p(0.26f, 0.8f).y); lineTo(p(0.26f, 0.5f).x, p(0.26f, 0.5f).y); close()
-                }
-                drawPath(house, YT.Surface); drawPath(house, accent, style = st)
+                val house = path(0.20f to 0.50f, 0.50f to 0.24f, 0.80f to 0.50f, 0.74f to 0.50f, 0.74f to 0.80f, 0.26f to 0.80f, 0.26f to 0.50f)
+                drawPath(house, Body); drawPath(house, Line, style = stroke)
+                val lit = (t * 4).toInt() % 4
                 for (i in 0 until 3) {
-                    val k = ((t * 3).toInt() % 4) > i
-                    val r = 0.06f + i * 0.06f
-                    drawArc(if (k) YT.Cyan else YT.Outline, 225f, 90f, false, topLeft = p(0.5f - r, 0.66f - r), size = sz(r * 2, r * 2), style = Stroke(line, cap = StrokeCap.Round))
+                    val rr = 0.05f + i * 0.055f
+                    drawArc(if (lit > i) YT.Cyan else Line.copy(alpha = 0.25f), 225f, 90f, false, topLeft = p(0.5f - rr, 0.70f - rr), size = sz(rr * 2, rr * 2), style = thin(0.9f))
                 }
-                drawCircle(YT.Cyan, radius = s * 0.02f, center = p(0.5f, 0.66f))
+                drawCircle(YT.Cyan, radius = s * 0.018f, center = p(0.5f, 0.70f))
             }
             "barrier" -> {
-                drawRoundRect(accent, topLeft = p(0.16f, 0.4f), size = sz(0.1f, 0.4f), cornerRadius = CornerRadius(s * 0.02f), style = st)
-                val ang = -30f * (0.5f - 0.5f * cos(t * 2 * PI).toFloat())
-                rotate(ang, pivot = p(0.21f, 0.46f)) {
-                    drawRoundRect(YT.White, topLeft = p(0.21f, 0.43f), size = sz(0.62f, 0.06f), cornerRadius = CornerRadius(s * 0.03f))
-                    for (i in 0 until 4) drawRect(YT.Danger, topLeft = p(0.3f + i * 0.14f, 0.43f), size = sz(0.06f, 0.06f))
+                drawLine(Line.copy(alpha = 0.5f), p(0.08f, 0.82f), p(0.92f, 0.82f), strokeWidth = w, cap = StrokeCap.Round)
+                // Opens, holds, closes, holds
+                val phase = t * 4f
+                val open = when {
+                    phase < 1f -> phase
+                    phase < 2f -> 1f
+                    phase < 3f -> 3f - phase
+                    else -> 0f
+                }.let { 0.5f - 0.5f * cos(it * PI).toFloat() }
+                rotate(-55f * open, pivot = p(0.21f, 0.47f)) {
+                    drawRoundRect(Color(0xFFEDEFF3), topLeft = p(0.21f, 0.445f), size = sz(0.64f, 0.05f), cornerRadius = r(0.025f))
+                    for (i in 0 until 4) drawRect(YT.Danger.copy(alpha = 0.85f), topLeft = p(0.31f + i * 0.13f, 0.445f), size = sz(0.055f, 0.05f))
                 }
-                drawLine(YT.TextMuted, p(0.08f, 0.82f), p(0.92f, 0.82f), strokeWidth = line, cap = StrokeCap.Round)
+                box(0.14f, 0.42f, 0.14f, 0.40f, 0.025f)
+                drawCircle(if (open > 0.5f) YT.Success else YT.Danger, radius = s * 0.016f, center = p(0.21f, 0.56f))
             }
             "tools" -> {
-                rotate(t * 360f, pivot = p(0.62f, 0.38f)) {
+                rotate(t * 90f, pivot = p(0.64f, 0.36f)) {
                     for (i in 0 until 8) {
                         val a = i * PI / 4
-                        drawLine(YT.Cyan, p(0.62f + 0.1f * cos(a).toFloat(), 0.38f + 0.1f * sin(a).toFloat()), p(0.62f + 0.14f * cos(a).toFloat(), 0.38f + 0.14f * sin(a).toFloat()), strokeWidth = line * 1.6f, cap = StrokeCap.Round)
+                        drawLine(Line, p(0.64f + 0.10f * cos(a).toFloat(), 0.36f + 0.10f * sin(a).toFloat()), p(0.64f + 0.145f * cos(a).toFloat(), 0.36f + 0.145f * sin(a).toFloat()), strokeWidth = w * 2.2f, cap = StrokeCap.Round)
                     }
-                    drawCircle(YT.Cyan, radius = s * 0.1f, center = p(0.62f, 0.38f), style = st)
+                    drawCircle(Body, radius = s * 0.105f, center = p(0.64f, 0.36f))
+                    drawCircle(Line, radius = s * 0.105f, center = p(0.64f, 0.36f), style = stroke)
+                    drawCircle(YT.Blue, radius = s * 0.035f, center = p(0.64f, 0.36f))
                 }
-                drawCircle(YT.Navy, radius = s * 0.04f, center = p(0.62f, 0.38f))
-                rotate(45f, pivot = p(0.4f, 0.6f)) {
-                    drawRoundRect(accent, topLeft = p(0.37f, 0.36f), size = sz(0.06f, 0.48f), cornerRadius = CornerRadius(s * 0.03f))
-                    drawCircle(accent, radius = s * 0.07f, center = p(0.4f, 0.36f), style = Stroke(line * 1.3f))
+                drawLine(Line, p(0.22f, 0.82f), p(0.44f, 0.60f), strokeWidth = w * 2.6f, cap = StrokeCap.Round)
+                drawArc(Line, 100f, 290f, false, topLeft = p(0.42f, 0.52f), size = sz(0.12f, 0.12f), style = Stroke(w * 1.6f, cap = StrokeCap.Round))
+            }
+            "pin" -> { // location pulse (used without background)
+                for (i in 0 until 2) {
+                    val k = (t + i * 0.5f) % 1f
+                    drawCircle(YT.Blue.copy(alpha = 0.4f * (1 - k)), radius = s * (0.1f + 0.35f * k), center = p(0.5f, 0.5f))
                 }
             }
-            "pin" -> { // location pulse (no background)
-                for (i in 0 until 3) {
-                    val k = (t + i / 3f) % 1f
-                    drawCircle(YT.Blue.copy(alpha = 0.5f * (1 - k)), radius = s * (0.1f + 0.4f * k), center = p(0.5f, 0.5f))
+            else -> { // shield with a radar sweep kept inside the shield
+                val shield = shieldPath(sz(0.54f, 0.62f)).also { it.translate(p(0.23f, 0.19f)) }
+                drawPath(shield, Body)
+                clipPath(shield) {
+                    rotate(t * 360f, pivot = p(0.5f, 0.50f)) {
+                        drawArc(
+                            Brush.sweepGradient(listOf(Color.Transparent, Color.Transparent, YT.Blue.copy(alpha = 0.35f)), center = p(0.5f, 0.50f)),
+                            270f, 90f, true, topLeft = p(0.15f, 0.15f), size = sz(0.7f, 0.7f),
+                        )
+                    }
                 }
-            }
-            else -> { // shield + radar sweep
-                val shield = shieldPath(sz(0.56f, 0.64f)).also { it.translate(p(0.22f, 0.18f)) }
-                drawPath(shield, YT.Surface); drawPath(shield, accent, style = st)
-                rotate(t * 360f, pivot = p(0.5f, 0.48f)) {
-                    drawArc(Brush.sweepGradient(listOf(Color.Transparent, YT.Cyan.copy(alpha = 0.45f)), center = p(0.5f, 0.48f)), 0f, 90f, true, topLeft = p(0.34f, 0.32f), size = sz(0.32f, 0.32f))
-                }
-                val check = Path().apply { moveTo(p(0.4f, 0.48f).x, p(0.4f, 0.48f).y); lineTo(p(0.48f, 0.56f).x, p(0.48f, 0.56f).y); lineTo(p(0.62f, 0.4f).x, p(0.62f, 0.4f).y) }
-                drawPath(check, YT.White, style = Stroke(line * 1.3f, cap = StrokeCap.Round))
+                drawPath(shield, Line, style = stroke)
+                val check = path(0.40f to 0.50f, 0.48f to 0.58f, 0.62f to 0.42f, closed = false)
+                drawPath(check, Color.White, style = Stroke(w * 1.4f, cap = StrokeCap.Round, join = StrokeJoin.Round))
             }
         }
     }

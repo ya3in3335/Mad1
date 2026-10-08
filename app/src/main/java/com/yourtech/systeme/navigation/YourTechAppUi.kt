@@ -129,7 +129,7 @@ fun YourTechAppUi(onLanguageChange: (AppLanguage) -> Unit, showSplash: Boolean =
                                     icon = { Icon(tab.icon, null) },
                                     label = { Text(stringResource(tab.label), maxLines = 1) },
                                     colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = YT.White, selectedTextColor = YT.Cyan, indicatorColor = YT.Blue,
+                                        selectedIconColor = YT.White, selectedTextColor = YT.White, indicatorColor = YT.Blue.copy(alpha = 0.85f),
                                         unselectedIconColor = YT.TextMuted, unselectedTextColor = YT.TextMuted,
                                     ),
                                 )

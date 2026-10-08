@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
@@ -92,26 +92,15 @@ fun YourTechSplash(onFinished: () -> Unit, modifier: Modifier = Modifier, badge:
         val lockupW = min(maxWidth * 0.84f, 440.dp)
         val lockupH = lockupW / BrandLogo.LOCKUP_RATIO
 
-        // Control-room backdrop: grid, glow, radar sweep
+        // Quiet backdrop: soft light behind the logo and a single fine ring that expands once.
         Canvas(Modifier.fillMaxSize().graphicsLayer { alpha = 1f - exit }) {
             val c = Offset(size.width / 2f, size.height * 0.45f)
-            val g = seg(0f, 0.6f)
-            val step = size.minDimension / 9f
-            var x = c.x % step
-            while (x < size.width) { drawLine(Color.White.copy(alpha = 0.04f * g), Offset(x, 0f), Offset(x, size.height)); x += step }
-            var y = c.y % step
-            while (y < size.height) { drawLine(Color.White.copy(alpha = 0.04f * g), Offset(0f, y), Offset(size.width, y)); y += step }
-            drawCircle(Brush.radialGradient(listOf(YT.Blue.copy(alpha = 0.30f * g), Color.Transparent), center = c, radius = size.minDimension * 0.7f), radius = size.minDimension * 0.7f, center = c)
-            for (i in 1..3) drawCircle(YT.Cyan.copy(alpha = 0.08f * g), radius = size.minDimension * 0.17f * i, center = c, style = Stroke(1.5f))
-            rotate(t * 120f, pivot = c) {
-                drawArc(
-                    Brush.sweepGradient(listOf(Color.Transparent, YT.Cyan.copy(alpha = 0.18f * g)), center = c), -60f, 60f, true,
-                    topLeft = Offset(c.x - size.minDimension * 0.5f, c.y - size.minDimension * 0.5f),
-                    size = androidx.compose.ui.geometry.Size(size.minDimension, size.minDimension),
-                )
+            val g = seg(0f, 0.8f)
+            drawCircle(Brush.radialGradient(listOf(YT.Blue.copy(alpha = 0.16f * g), Color.Transparent), center = c, radius = size.minDimension * 0.75f), radius = size.minDimension * 0.75f, center = c)
+            val ring = seg(1.25f, 1.4f)
+            if (ring in 0.001f..0.999f) {
+                drawCircle(Color.White.copy(alpha = 0.10f * (1 - ring)), radius = size.minDimension * (0.25f + 0.4f * EaseOut.transform(ring)), center = c, style = Stroke(1.2f))
             }
-            val ping = seg(1.25f, 0.9f)
-            if (ping in 0.001f..0.999f) drawCircle(YT.Cyan.copy(alpha = 0.45f * (1 - ping)), radius = size.minDimension * 0.55f * EaseOut.transform(ping), center = c, style = Stroke(3f))
         }
 
         Column(
@@ -129,15 +118,15 @@ fun YourTechSplash(onFinished: () -> Unit, modifier: Modifier = Modifier, badge:
                                 val top = size.height * (1f - markP)
                                 clipRect(top = top) { this@drawWithContent.drawContent() }
                                 if (markP in 0.01f..0.99f) {
-                                    drawRect(Brush.verticalGradient(listOf(Color.Transparent, YT.Cyan.copy(alpha = 0.6f), Color.Transparent), startY = top - 24f, endY = top + 24f), topLeft = Offset(-20f, top - 24f), size = androidx.compose.ui.geometry.Size(size.width + 40f, 48f))
+                                    drawRect(Brush.verticalGradient(listOf(Color.Transparent, Color.White.copy(alpha = 0.35f), Color.Transparent), startY = top - 18f, endY = top + 18f), topLeft = Offset(-20f, top - 24f), size = androidx.compose.ui.geometry.Size(size.width + 40f, 48f))
                                 }
                                 // nodes light up bottom → top
                                 BrandLogo.NODES.reversed().forEachIndexed { i, (nx, ny) ->
                                     val p = seg(0.95f + i * 0.17f, 0.7f)
                                     if (p > 0f && p < 1f) {
                                         val cxy = Offset(size.width * nx, size.height * ny)
-                                        drawCircle(YT.Cyan.copy(alpha = 0.55f * (1 - p)), radius = size.width * (0.05f + 0.22f * p), center = cxy)
-                                        drawCircle(YT.Cyan.copy(alpha = 0.9f * (1 - p)), radius = size.width * (0.06f + 0.3f * p), center = cxy, style = Stroke(3f))
+                                        drawCircle(Color.White.copy(alpha = 0.35f * (1 - p)), radius = size.width * (0.04f + 0.10f * p), center = cxy)
+                                        drawCircle(Color.White.copy(alpha = 0.5f * (1 - p)), radius = size.width * (0.05f + 0.16f * p), center = cxy, style = Stroke(1.5f))
                                     }
                                 }
                             },
@@ -154,22 +143,22 @@ fun YourTechSplash(onFinished: () -> Unit, modifier: Modifier = Modifier, badge:
             }
             Spacer(Modifier.height(30.dp))
             val tg = seg(2.35f, 0.55f)
-            Box(Modifier.width(lockupW * (0.2f + 0.6f * EaseOut.transform(tg))).height(1.dp).background(Brush.horizontalGradient(listOf(Color.Transparent, YT.Cyan, Color.Transparent))).graphicsLayer { alpha = tg })
+            Box(Modifier.width(lockupW * (0.2f + 0.6f * EaseOut.transform(tg))).height(1.dp).background(Brush.horizontalGradient(listOf(Color.Transparent, YT.Gold, Color.Transparent))).graphicsLayer { alpha = tg })
             Spacer(Modifier.height(12.dp))
             Text(
-                "Smart Security Solutions", color = YT.Cyan, fontFamily = Tajawal, fontWeight = FontWeight.Medium,
-                fontSize = 15.sp, letterSpacing = (1.5f + 2f * EaseOut.transform(tg)).sp, modifier = Modifier.graphicsLayer { alpha = tg },
+                "SMART SECURITY SOLUTIONS", color = YT.White.copy(alpha = 0.78f), fontFamily = Tajawal, fontWeight = FontWeight.Medium,
+                fontSize = 12.sp, letterSpacing = (2f + 2.5f * EaseOut.transform(tg)).sp, modifier = Modifier.graphicsLayer { alpha = tg },
             )
             if (badge != null) {
                 Spacer(Modifier.height(16.dp))
                 Text(
                     badge, color = YT.White, fontFamily = Tajawal, fontWeight = FontWeight.Bold, fontSize = 13.sp,
-                    modifier = Modifier.graphicsLayer { alpha = seg(2.5f, 0.4f) }.clip(RoundedCornerShape(50)).background(YT.Blue).padding(horizontal = 16.dp, vertical = 5.dp),
+                    modifier = Modifier.graphicsLayer { alpha = seg(2.5f, 0.4f) }.clip(RoundedCornerShape(50)).border(1.dp, YT.Gold.copy(alpha = 0.6f), RoundedCornerShape(50)).padding(horizontal = 16.dp, vertical = 5.dp),
                 )
             }
         }
         Box(Modifier.align(Alignment.BottomCenter).padding(bottom = 46.dp).width(120.dp).height(2.dp).clip(RoundedCornerShape(50)).background(Color.White.copy(alpha = 0.08f))) {
-            Box(Modifier.fillMaxWidth(EaseInOut.transform((t / TOTAL).coerceIn(0f, 1f))).height(2.dp).background(Brush.horizontalGradient(listOf(YT.Blue, YT.Cyan))))
+            Box(Modifier.fillMaxWidth(EaseInOut.transform((t / TOTAL).coerceIn(0f, 1f))).height(2.dp).background(YT.Blue))
         }
     }
 }

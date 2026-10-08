@@ -137,7 +137,7 @@ private fun AdminMain(vm: AdminViewModel, user: AdminUser) {
                             selected = current == t.route, onClick = { nav.switchTab(t.route) },
                             icon = { Icon(t.icon, null) }, label = { Text(t.label, maxLines = 1) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = YT.White, selectedTextColor = YT.Cyan, indicatorColor = YT.Blue,
+                                selectedIconColor = YT.White, selectedTextColor = YT.White, indicatorColor = YT.Blue.copy(alpha = 0.85f),
                                 unselectedIconColor = YT.TextMuted, unselectedTextColor = YT.TextMuted,
                             ),
                         )
