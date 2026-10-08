@@ -24,6 +24,12 @@ class CatalogTest {
     }
 
     @Test
+    fun `store phone is formatted for display`() {
+        assertEquals("+213 664 71 70 29", com.madak.spices.data.model.StoreInfo.phonePretty)
+        assertEquals("https://wa.me/213664717029", com.madak.spices.data.model.StoreInfo.whatsappUrl())
+    }
+
+    @Test
     fun `more specific keywords rank first`() {
         val mix = Dish.CHICKEN.relevance("خلطة الدجاج", "", "")!!
         val pepper = Dish.CHICKEN.relevance("فلفل أسود", "", "")!!

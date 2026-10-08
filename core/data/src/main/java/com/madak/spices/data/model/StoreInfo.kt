@@ -7,6 +7,7 @@ import java.net.URLEncoder
  *
  * Source: the official TikTok account @madak.spices ("Madak Spices-مذاق للتوابل"), whose videos
  * place the shop near the M Suite hotel in Dar El Beïda, Algiers.
+ * Phone/WhatsApp provided by the store owner (+213 664 71 70 29).
  * Leave a value empty when it is not known: the matching contact button is hidden, so the app never
  * shows a made-up number. Fill PHONE / WHATSAPP / INSTAGRAM_HANDLE / EMAIL / hours when available.
  */
@@ -17,8 +18,9 @@ object StoreInfo {
     const val SLOGAN_FR = "Madak, le secret des bons plats"
 
     /** International format without "+", e.g. "213550123456". */
-    const val PHONE = ""
-    const val WHATSAPP = ""
+    const val PHONE = "213664717029"
+    /** Same line as the phone (provided by the store owner). */
+    const val WHATSAPP = "213664717029"
     const val INSTAGRAM_HANDLE = ""
     const val EMAIL = ""
     const val TIKTOK_HANDLE = "madak.spices"
@@ -39,6 +41,8 @@ object StoreInfo {
     val hasOpeningHours get() = OPENING_HOURS_AR.isNotBlank()
 
     val phoneDisplay get() = "+$PHONE"
+    /** "+213 664 71 70 29" */
+    val phonePretty get() = "+" + PHONE.take(3) + " " + PHONE.drop(3).let { "${it.take(3)} ${it.drop(3).chunked(2).joinToString(" ")}" }
     val tiktokUrl get() = "https://www.tiktok.com/@$TIKTOK_HANDLE"
     val instagramUrl get() = "https://instagram.com/$INSTAGRAM_HANDLE"
     fun whatsappUrl(message: String = "") =

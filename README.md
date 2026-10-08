@@ -270,10 +270,21 @@ Store details live in `core/data/src/main/java/com/madak/spices/data/model/Store
 Current values come from the official TikTok account [@madak.spices](https://www.tiktok.com/@madak.spices)
 (*Madak Spices-مذاق للتوابل*): TikTok link, slogan, and location near the M Suite hotel in Dar El Beïda, Algiers.
 
-Phone, WhatsApp, Instagram, e-mail and opening hours are **not published** there, so they are left empty
-and their buttons are hidden. Fill them in to make the WhatsApp/call buttons appear automatically.
+Phone and WhatsApp: **+213 664 71 70 29** (provided by the store owner).
+Instagram, e-mail and opening hours are not published yet, so they are left empty and their buttons are
+hidden; filling them in makes the buttons appear automatically.
 Delivery fees and the free-delivery threshold are in `Pricing.kt`.
 
 ---
 
 <div align="center">مذاق لتوابل — سرّ النكهة في مطبخك 🌿</div>
+
+## Promo video
+
+`docs/promo/make_promo.py` renders a 25 s vertical (1080×1920) motion-graphics ad from the real logo layers
+and real app screens, with an original synthesized soundtrack:
+
+```bash
+./gradlew :app:testDebugUnitTest -PmadakAd=true --tests "*AdScreenshotsTest"   # app screens with an illustrative catalogue
+python3 docs/promo/make_promo.py . app/build/outputs/screenshots/ad madak-promo.mp4
+```

@@ -66,7 +66,11 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            all { it.systemProperty("madak.screenshots.dir", layout.buildDirectory.dir("outputs/screenshots").get().asFile.absolutePath) }
+            all {
+                it.systemProperty("madak.screenshots.dir", layout.buildDirectory.dir("outputs/screenshots").get().asFile.absolutePath)
+                // Marketing screenshots (sample catalogue) only run on demand: ./gradlew :app:testDebugUnitTest -PmadakAd=true
+                it.systemProperty("madak.ad", (project.findProperty("madakAd") ?: "false").toString())
+            }
         }
     }
 

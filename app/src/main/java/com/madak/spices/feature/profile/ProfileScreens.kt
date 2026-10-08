@@ -422,10 +422,10 @@ fun ContactScreen(onBack: () -> Unit) {
         Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             // Only channels with real, published details are shown.
             if (StoreInfo.hasWhatsapp) {
-                ContactButton(Icons.Rounded.Chat, stringResource(R.string.action_whatsapp), "\u2066+${StoreInfo.WHATSAPP}\u2069", Color(0xFF25D366)) { Launcher.whatsapp(context, whatsappMessage) }
+                ContactButton(Icons.Rounded.Chat, stringResource(R.string.action_whatsapp), "\u2066${StoreInfo.phonePretty}\u2069", Color(0xFF25D366)) { Launcher.whatsapp(context, whatsappMessage) }
             }
             if (StoreInfo.hasPhone) {
-                ContactButton(Icons.Rounded.Call, stringResource(R.string.action_call), StoreInfo.phoneDisplay, MadakColors.Info) { Launcher.call(context) }
+                ContactButton(Icons.Rounded.Call, stringResource(R.string.action_call), "\u2066${StoreInfo.phonePretty}\u2069", MadakColors.Info) { Launcher.call(context) }
             }
             if (StoreInfo.hasTiktok) {
                 ContactButton(Icons.Rounded.MusicNote, stringResource(R.string.action_tiktok), "\u2066@${StoreInfo.TIKTOK_HANDLE}\u2069", MadakColors.Ink) { Launcher.tiktok(context) }
