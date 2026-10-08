@@ -49,7 +49,6 @@ import com.yourtech.systeme.admin.ui.ListCard
 import com.yourtech.systeme.admin.ui.PickImageButton
 import com.yourtech.systeme.admin.ui.SwitchRow
 import com.yourtech.systeme.admin.ui.dateAr
-import com.yourtech.systeme.data.local.entity.ProjectEntity
 import com.yourtech.systeme.data.local.entity.PromotionEntity
 import com.yourtech.systeme.data.local.entity.TestimonialEntity
 import com.yourtech.systeme.data.media.ImageImporter
@@ -70,7 +69,6 @@ fun ContentHubScreen(vm: AdminViewModel, onOpen: (String) -> Unit) {
     HubScreen(
         "المحتوى",
         listOf(
-            Triple("معرض المشاريع", Icons.Rounded.PhotoLibrary, "projects") to AdminPermission.PORTFOLIO,
             Triple("العروض الترويجية", Icons.Rounded.Campaign, "promotions") to AdminPermission.PROMOTIONS,
             Triple("آراء العملاء", Icons.Rounded.RateReview, "testimonials") to AdminPermission.TESTIMONIALS,
             Triple("معلومات الشركة", Icons.Rounded.Business, "business") to AdminPermission.BUSINESS_INFO,
@@ -90,90 +88,6 @@ private fun ListScaffold(title: String, onBack: () -> Unit, addText: String, onA
             item { AdminTopBar(title, onBack); header() }
             body()
         }
-    }
-}
-
-// ---- Portfolio -----------------------------------------------------------------------------------
-
-@Composable
-fun ProjectsAdminScreen(vm: AdminViewModel, onBack: () -> Unit, onEdit: (Long?) -> Unit) {
-    val list by remember { vm.state(vm.repo.projects, emptyList()) }.collectAsStateWithLifecycle()
-    ListScaffold("معرض المشاريع", onBack, "مشروع جديد", { onEdit(null) }, header = {
-        Text(
-            "استعمل فقط صورًا معتمدة من الشركة وبموافقة العميل. لا تنشر لقطات كاميرات مباشرة، ولا تفاصيل حساسة عن الموقع، ولا رموز دخول، ولا معلومات تعرّف بالعميل.",
-            style = MaterialTheme.typography.bodySmall, color = YT.Warning, modifier = Modifier.padding(horizontal = 16.dp),
-        )
-    }) {
-        if (list.isEmpty()) item { EmptyState(Icons.Rounded.PhotoLibrary, "لا توجد مشاريع", "أضف المشاريع المنجزة المعتمدة لعرضها للعملاء.") }
-        items(list, key = { it.id }) { p ->
-            ListCard({ onEdit(p.id) }, Modifier.padding(horizontal = 16.dp, vertical = 5.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    MediaImage(p.photos.lines().firstOrNull()?.ifBlank { null }, "shield", Modifier.size(64.dp).clip(RoundedCornerShape(12.dp)))
-                    Spacer(Modifier.size(12.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(p.title, style = MaterialTheme.typography.titleSmall, maxLines = 1)
-                        Text(p.generalLocation.ifBlank { "—" }, style = MaterialTheme.typography.bodySmall, color = YT.TextMuted)
-                    }
-                    val live = p.isPublished && p.clientPermissionConfirmed
-                    StatusPill(if (live) "منشور" else "مسودة", if (live) YT.Success else YT.TextMuted)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ProjectEditorScreen(vm: AdminViewModel, id: Long?, onBack: () -> Unit) {
-    val list by remember { vm.state(vm.repo.projects, emptyList()) }.collectAsStateWithLifecycle()
-    val services by remember { vm.state(vm.repo.services, emptyList()) }.collectAsStateWithLifecycle()
-    val base = list.firstOrNull { it.id == id } ?: if (id == null) ProjectEntity(title = "") else null
-    if (base == null) { Column(Modifier.fillMaxSize().background(YT.Navy)) { AdminTopBar("مشروع", onBack) }; return }
-    var p by remember(base.id) { mutableStateOf(base) }
-    val photos = p.photos.lines().filter { it.isNotBlank() }
-    var url by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
-    EditorPage(if (id == null) "مشروع جديد" else "تعديل مشروع", onBack, onSave = { vm.run("تم الحفظ", onBack) { vm.repo.saveProject(p) } }) {
-        FormSection("المشروع") {
-            Field(p.title, { p = p.copy(title = it) }, "العنوان *", maxLength = 120)
-            Field(p.generalLocation, { p = p.copy(generalLocation = it) }, "المنطقة العامة فقط (مثال: وهران)", maxLength = 60, hint = "لا تكتب العنوان الدقيق")
-            ChoiceRow("نوع الخدمة", services, services.firstOrNull { it.id == p.serviceCategoryId }, { it.nameAr }) { p = p.copy(serviceCategoryId = it.id) }
-            Field(p.description, { p = p.copy(description = it) }, "الوصف", singleLine = false, minLines = 3)
-            Field(p.equipment, { p = p.copy(equipment = it) }, "المعدات المستعملة", singleLine = false, minLines = 2, maxLength = 500)
-        }
-        FormSection("الصور (${photos.size})") {
-            if (photos.isNotEmpty()) {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(photos) { ph ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            MediaImage(ph, "shield", Modifier.size(96.dp).clip(RoundedCornerShape(12.dp)))
-                            androidx.compose.material3.TextButton({ p = p.copy(photos = (photos - ph).joinToString("\n")) }) { Text("إزالة", color = YT.Danger) }
-                        }
-                    }
-                }
-            }
-            PickImageButton("إضافة صورة معتمدة") { uri ->
-                scope.launch {
-                    when (val r = vm.repo.importImage(uri, "projects")) {
-                        is ImageImporter.Result.Ok -> p = p.copy(photos = (photos + r.path).joinToString("\n"))
-                        else -> vm.message(importMessage(r).orEmpty())
-                    }
-                }
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Field(url, { url = it.trim() }, "أو رابط صورة https", Modifier.weight(1f), keyboard = KeyboardType.Uri, maxLength = 500)
-                androidx.compose.material3.TextButton({ if (url.isNotBlank()) { p = p.copy(photos = (photos + url).joinToString("\n")); url = "" } }) { Text("إضافة") }
-            }
-        }
-        FormSection("النشر") {
-            SwitchRow("أكدتُ موافقة العميل على النشر", p.clientPermissionConfirmed, { p = p.copy(clientPermissionConfirmed = it, isPublished = p.isPublished && it) },
-                "موافقة مكتوبة على الصور والوصف")
-            SwitchRow("نشر في التطبيق", p.isPublished, { p = p.copy(isPublished = it) }, enabled = p.clientPermissionConfirmed)
-            com.yourtech.systeme.designsystem.component.OutlineButton(
-                p.completedAt?.let { "تاريخ الإنجاز: ${dateAr(it)}" } ?: "تعيين تاريخ الإنجاز: اليوم",
-                { p = p.copy(completedAt = System.currentTimeMillis()) }, Modifier.padding(top = 4.dp),
-            )
-        }
-        if (id != null) DeleteButton("حذف المشروع", { vm.run("تم الحذف", onBack) { vm.repo.deleteProject(id) } })
     }
 }
 

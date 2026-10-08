@@ -43,6 +43,8 @@ class StoreInitializer @Inject constructor(private val db: YourTechDatabase) {
                 db.catalogDao().insertServices(SeedContent.services)
                 db.catalogDao().insertProductCategories(SeedContent.productCategories)
             }
+            // The store sells equipment only: no installation, repair or consulting services.
+            db.catalogDao().deleteServices(listOf("installation", "consulting"))
             if (db.contentDao().getBusinessInfo() == null) db.contentDao().upsertBusinessInfo(BusinessDefaults.info)
         }
     }
@@ -99,7 +101,7 @@ class RequestRepository @Inject constructor(private val db: YourTechDatabase) {
             type = form.type,
             customerName = Validation.clean(form.customerName, 80),
             phone = Validation.normalizePhone(form.phone),
-            wilaya = form.wilaya!!.storageValue,
+            wilaya = form.wilaya?.storageValue.orEmpty(),
             commune = Validation.clean(form.commune, 80),
             address = Validation.clean(form.address, 300),
             propertyType = form.propertyType,
@@ -119,7 +121,7 @@ class RequestRepository @Inject constructor(private val db: YourTechDatabase) {
             val profile = db.contentDao().getProfile() ?: ProfileEntity()
             db.contentDao().upsertProfile(
                 profile.copy(
-                    fullName = entity.customerName, phone = entity.phone, wilaya = entity.wilaya, commune = entity.commune,
+                    fullName = entity.customerName, phone = entity.phone, wilaya = entity.wilaya.ifBlank { profile.wilaya }, commune = entity.commune.ifBlank { profile.commune },
                     address = entity.address.ifBlank { profile.address },
                 )
             )

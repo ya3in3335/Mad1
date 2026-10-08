@@ -35,8 +35,8 @@ Kotlin · Jetpack Compose · Material 3 · MVVM · Hilt · Room · Retrofit · C
 
 | App | Module | Application ID | Purpose |
 |---|---|---|---|
-| **YOURTECH SYSTEME** | `:app` | `com.yourtech.systeme` | Customer app: solutions, equipment catalog, installation, maintenance and quotation requests with tracking, portfolio, contact |
-| **YOURTECH Admin** | `:admin` | `com.yourtech.systeme.admin` | Back office: requests, appointments, products, inventory, categories, services, portfolio, promotions, testimonials, business info, accounts, audit log |
+| **YOURTECH SYSTEME** | `:app` | `com.yourtech.systeme` | Customer app: equipment families, catalog, quote requests with tracking, contact |
+| **YOURTECH Admin** | `:admin` | `com.yourtech.systeme.admin` | Back office: quote requests, products, inventory, categories, solutions, promotions, testimonials, business info, accounts, audit log |
 
 Both apps share the data layer (`:core:data`) and the design system (`:core:designsystem`). The design system holds the official logo, the brand palette and the motion-graphics splash. The palette is deep navy `#071426`, security blue `#176BFF`, electric cyan `#00D9FF` and dark surfaces `#101F35`.
 
@@ -47,26 +47,27 @@ Both apps share the data layer (`:core:data`) and the design system (`:core:desi
 
 ## Features
 
+YOURTECH SYSTEME is a **shop that sells security equipment**. It does **not** install, repair or service equipment outside the shop, so the apps contain no installation, maintenance, technician, appointment or project-portfolio features.
+
 ### Customer app
-- **Motion-graphics splash.** It draws the official logo: the circuit "Y" is drawn by a scan line, the nodes pulse, then the bar and the wordmark appear over a radar grid, with the tagline "Smart Security Solutions".
-- **Home dashboard:**
-  - hero section with shortcuts for installation, support, consultation, WhatsApp and call;
+- **Motion-graphics splash:** the official logo is revealed by a soft scan line, then the bar and the wordmark appear, with the tagline "Smart Security Solutions".
+- **Home:**
+  - hero with **Request a quote** and WhatsApp;
+  - quick actions: quote, equipment, WhatsApp, call;
   - live open/closed status (Algiers time zone);
-  - featured security solutions and equipment;
-  - offers, verified testimonials and published projects, each shown only when present;
+  - featured equipment families and products;
+  - offers and verified testimonials, shown only when present;
   - visit card with an offline OpenStreetMap preview.
-- **Security solutions:** CCTV, alarms, access control (RFID/NFC and biometrics), smart security, intercom, and installation/maintenance. Each solution has an animated vector illustration, a description, benefits, use cases and specs. Each also has buttons to **request a quote**, **request an installation** or **contact a technician** on WhatsApp.
+- **Security solutions** (equipment families): CCTV, alarms, access control, smart security, intercom. Each has an animated illustration, description, benefits, use cases and specs, plus buttons to **request a quote**, **browse the equipment** and **ask on WhatsApp**.
 - **Equipment catalog:**
   - search, category filters and favorites;
-  - each product shows its photo, brand/model, specs, price in DZD (or "price on request"), stock status, warranty and installation availability;
+  - each product shows photo, brand/model, specs, price in DZD (or "price on request"), stock status and warranty (only if entered by the shop);
   - quote request and WhatsApp inquiry buttons.
-- **Requests** (installation, maintenance/support, consultation, quote):
-  - validated forms: Algerian phone format, all 58 wilayas with search, commune, address, property type, system or equipment, number of devices, preferred date, notes, and up to 6 photos;
-  - tracking timeline: Submitted → Under review → Quotation prepared → Approved → Scheduled → In progress → Completed;
-  - cancellation while the request is still Submitted;
+- **Quote requests:**
+  - form: equipment type (optional), quantity, notes, name, phone (Algerian format), wilaya (optional) and up to 6 photos;
+  - tracking: Submitted → Under review → Quote ready → Completed, with cancellation before completion;
   - local notifications.
-- **Hand-off to the company:** each request gets a reference such as `YT-INS-261008-1234`. The customer sends it to YOURTECH in one tap as a pre-filled WhatsApp message, and can share the photos too.
-- **Portfolio:** only projects marked as both *client-permission confirmed* and *published* appear.
+- **Hand-off to the shop:** each request gets a reference such as `YT-DEV-261008-1234`. The customer sends it in one tap as a pre-filled WhatsApp message and can share the photos too.
 - **Contact:** map, Google Maps directions, WhatsApp, call, email, weekly hours (Friday closed) and social links, each shown only when set.
 - Language switch (AR/FR/EN), full RTL, accessible touch targets, skeleton loading and empty states.
 
@@ -78,41 +79,27 @@ Both apps share the data layer (`:core:data`) and the design system (`:core:desi
   |---|---|
   | Owner | Everything |
   | Manager | Everything except accounts |
-  | Sales staff | Requests, appointments, products, inventory |
-  | Technician | Requests, appointments |
+  | Sales staff | Quote requests, products, inventory |
 
-- **Dashboard:** today's requests, awaiting review, open, today's appointments, completed, quick actions and latest requests.
-- **Requests:**
-  - filter by status and type;
-  - customer call/WhatsApp;
-  - status transitions (forward only, cancel until work starts) with a note for the customer;
-  - appointment date and time, quote amount, assigned technician and company note;
-  - timeline.
-- **Appointments** grouped by day.
+- **Dashboard:** today's requests, awaiting review, open, completed, quick actions and latest requests.
+- **Quote requests:** filter by status, call/WhatsApp the customer, move the status forward with a note, enter the quote amount and a note for the customer, timeline.
 - **Catalog:**
   - products: create/edit/delete, gallery photo, https URL or illustration;
   - inventory: stock status and quantity;
   - equipment categories;
-  - **service categories**: trilingual content plus an activation switch, so a service is shown to customers only after the company confirms it.
-- **Content:**
-  - portfolio: approved photos only; publishing is blocked until client permission is ticked; general location only;
-  - promotions with duration;
-  - testimonials: hidden until verified;
-  - **business info**: validated phone numbers, https-only links, email, coordinates and weekly hours.
-- **Settings:** change password, accounts (create with a temporary password, enable/disable, reset), **audit log** and logout.
+  - **security solutions**: trilingual content plus an activation switch, so a family is shown only once the shop confirms it sells it.
+- **Content:** promotions with duration; testimonials (hidden until verified); **business info** with validated phones, https-only links, email, coordinates and weekly hours.
+- **Settings:** change password, accounts (temporary password, enable/disable, reset), **audit log** and logout.
 
 ## Content and verification rules
 
-The apps follow the brief's rules. **Nothing has been invented.**
+**Nothing has been invented.**
 
-- **No fake data:**
-  - **No products, prices, brands, stock levels or warranties are shipped.** The catalog starts empty and the company fills it in from the Admin app.
-  - **No projects, testimonials, ratings or promotions are shipped.**
-  - No social links are pre-filled. They appear only once entered in Admin.
-- **Services are a proposal.** Six common categories are active. Two of them, *gates and barriers* and *security consulting*, are present but **hidden** until confirmed. The company must review all of them in Admin → Catalog → Services and disable any it does not offer.
-- **Visuals:** the app uses animated **vector illustrations** instead of stock photos. The stock photos I found showed specific brands (e.g. Hikvision, ANNKE) or random street cameras, which would suggest a partnership or work that does not exist. Real product and project photos are uploaded from the Admin app.
-- **Portfolio privacy:** it never shows live camera feeds, exact addresses, access codes or identifiable customer information. The admin UI reminds staff of this, and the data layer refuses to publish without client permission.
-- **Company details:** all of them (name, phone, address, GPS, hours) are configurable data and **must be re-verified before production**.
+- **No products, prices, brands, stock levels or warranties are shipped.** The catalog starts empty and the shop fills it in from the Admin app.
+- **No testimonials, ratings or promotions are shipped.** No social links are pre-filled.
+- **No services the shop does not provide:** no installation, repair, maintenance or consulting anywhere in the apps. Five equipment families are active; *gates and barriers* is present but **hidden** until the shop confirms it sells it.
+- **Visuals:** animated **vector illustrations** instead of stock photos (stock photos showed specific brands such as Hikvision or ANNKE, which would suggest a partnership that does not exist). Real product photos are uploaded from the Admin app.
+- **Company details** (name, phone, address, GPS, hours) are configurable and **must be re-verified before production**.
 
 ## Tech stack
 
@@ -136,7 +123,7 @@ app/                     Customer app (com.yourtech.systeme)
   feature/solutions      Security solution list + detail
   feature/products       Catalog, product detail, favorites
   feature/requests       Request form, list, tracking, WhatsApp message
-  feature/more           More, contact, about, privacy, notifications, portfolio
+  feature/more           More, contact, about, privacy, notifications
   navigation/            NavHost + bottom navigation
 admin/                   Admin app (com.yourtech.systeme.admin)
   auth/                  PBKDF2 hashing, accounts, roles/permissions, lock-out
@@ -235,9 +222,8 @@ Before publishing, in **Admin**:
 - [ ] Services: confirm each category; disable what YOURTECH does not provide; edit the texts.
 - [ ] Equipment categories: adjust to the real catalog.
 - [ ] Products: real names, brands, prices, stock and warranty only.
-- [ ] Portfolio: only approved photos, with written client permission.
 - [ ] Testimonials: only real, verified customers.
-- [ ] Create staff and technician accounts with the right roles.
+- [ ] Create staff accounts with the right roles.
 
 ## Credits and licences
 

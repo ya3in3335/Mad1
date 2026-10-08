@@ -37,12 +37,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddAPhoto
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +47,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,7 +75,6 @@ import com.yourtech.systeme.R
 import com.yourtech.systeme.data.local.entity.ProductCategoryEntity
 import com.yourtech.systeme.data.local.entity.ServiceCategoryEntity
 import com.yourtech.systeme.data.media.ImageImporter
-import com.yourtech.systeme.data.model.PropertyType
 import com.yourtech.systeme.data.model.RequestForm
 import com.yourtech.systeme.data.model.RequestType
 import com.yourtech.systeme.data.model.Wilaya
@@ -126,7 +121,7 @@ class RequestFormViewModel @Inject constructor(
     private val requests: RequestRepository,
     private val importer: ImageImporter,
 ) : ViewModel() {
-    private val type = RequestType.entries.firstOrNull { it.name == saved.get<String>("type") } ?: RequestType.INSTALLATION
+    private val type = RequestType.entries.firstOrNull { it.name == saved.get<String>("type") } ?: RequestType.QUOTE
     private val _ui = MutableStateFlow(
         FormUi(RequestForm(type = type, systemType = saved.get<String>("system")?.ifBlank { null }, productId = saved.get<String>("product")?.ifBlank { null }))
     )
@@ -182,13 +177,11 @@ class RequestFormViewModel @Inject constructor(
 fun RequestFormScreen(onBack: () -> Unit, onSent: (Long) -> Unit, viewModel: RequestFormViewModel = hiltViewModel()) {
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     val services by viewModel.services.collectAsStateWithLifecycle()
-    val equipment by viewModel.equipment.collectAsStateWithLifecycle()
     val l = LocalLanguage.current
     val context = LocalContext.current
     val snackbar = LocalSnackbar.current
     val focus = LocalFocusManager.current
     var wilayaSheet by remember { mutableStateOf(false) }
-    var datePicker by remember { mutableStateOf(false) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(RequestForm.MAX_PHOTOS)) { uris -> if (uris.isNotEmpty()) viewModel.addPhotos(uris) }
     LaunchedEffect(Unit) { viewModel.sent.collect(onSent) }
     LaunchedEffect(Unit) { viewModel.rejected.collect { snackbar.showSnackbar(context.getString(R.string.photo_rejected)) } }
@@ -201,40 +194,19 @@ fun RequestFormScreen(onBack: () -> Unit, onSent: (Long) -> Unit, viewModel: Req
             TopBar(stringResource(type.label), onBack)
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
                 Section(stringResource(R.string.form_need))
-                if (type == RequestType.MAINTENANCE) {
-                    Label(stringResource(R.string.field_equipment), RequestForm.Field.SYSTEM in e)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        equipment.forEach { c -> Chip(c.name(l), f.systemType == c.id, { viewModel.update { it.copy(systemType = c.id) } }) }
-                    }
-                    Field(f.problemDescription, { v -> viewModel.update { it.copy(problemDescription = v) } }, R.string.field_problem, RequestForm.Field.PROBLEM in e, R.string.err_problem, minLines = 3)
-                } else {
-                    Label(stringResource(R.string.field_system), RequestForm.Field.SYSTEM in e)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        services.forEach { c -> Chip(c.name(l), f.systemType == c.id, { viewModel.update { it.copy(systemType = c.id) } }) }
-                    }
+                Label(stringResource(R.string.field_system), false)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    services.forEach { c -> Chip(c.name(l), f.systemType == c.id, { viewModel.update { it.copy(systemType = if (f.systemType == c.id) null else c.id) } }) }
                 }
-                if (type == RequestType.INSTALLATION || type == RequestType.QUOTE) {
-                    Label(stringResource(R.string.field_property), RequestForm.Field.PROPERTY in e)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        PropertyType.entries.forEach { pt -> Chip(stringResource(pt.label), f.propertyType == pt, { viewModel.update { it.copy(propertyType = pt) } }) }
-                    }
-                    Field(f.deviceCount, { v -> viewModel.update { it.copy(deviceCount = v.filter(Char::isDigit).take(3)) } }, R.string.field_devices, RequestForm.Field.DEVICES in e, R.string.err_devices, KeyboardType.Number)
-                }
+                Field(f.deviceCount, { v -> viewModel.update { it.copy(deviceCount = v.filter(Char::isDigit).take(3)) } }, R.string.field_devices, RequestForm.Field.DEVICES in e, R.string.err_devices, KeyboardType.Number)
+                Field(f.notes, { v -> viewModel.update { it.copy(notes = v) } }, R.string.field_notes, false, R.string.err_generic, minLines = 3)
 
                 Section(stringResource(R.string.form_contact))
                 Field(f.customerName, { v -> viewModel.update { it.copy(customerName = v) } }, R.string.field_name, RequestForm.Field.NAME in e, R.string.err_name)
                 Field(f.phone, { v -> viewModel.update { it.copy(phone = v) } }, R.string.field_phone, RequestForm.Field.PHONE in e, R.string.err_phone, KeyboardType.Phone)
-
-                Section(stringResource(R.string.form_site))
-                PickerField(f.wilaya?.label(l).orEmpty(), stringResource(R.string.field_wilaya), RequestForm.Field.WILAYA in e, stringResource(R.string.err_wilaya), Icons.Rounded.ExpandMore) {
+                PickerField(f.wilaya?.label(l).orEmpty(), stringResource(R.string.field_wilaya), false, "", Icons.Rounded.ExpandMore) {
                     focus.clearFocus(); wilayaSheet = true
                 }
-                Field(f.commune, { v -> viewModel.update { it.copy(commune = v) } }, R.string.field_commune, RequestForm.Field.COMMUNE in e, R.string.err_commune)
-                Field(f.address, { v -> viewModel.update { it.copy(address = v) } }, R.string.field_address, RequestForm.Field.ADDRESS in e, R.string.err_address)
-                PickerField(f.preferredDate?.let { formatDate(it, l) }.orEmpty(), stringResource(R.string.field_date), RequestForm.Field.DATE in e, stringResource(R.string.err_date), Icons.Rounded.CalendarMonth) {
-                    focus.clearFocus(); datePicker = true
-                }
-                Field(f.notes, { v -> viewModel.update { it.copy(notes = v) } }, R.string.field_notes, false, R.string.err_generic, minLines = 2)
 
                 Section(stringResource(R.string.field_photos))
                 GlassCard(Modifier.fillMaxWidth()) {
@@ -274,14 +246,7 @@ fun RequestFormScreen(onBack: () -> Unit, onSent: (Long) -> Unit, viewModel: Req
         WilayaSheet(wilayaSheet, onPick = { w -> viewModel.update { it.copy(wilaya = w) }; wilayaSheet = false }, onDismiss = { wilayaSheet = false })
     }
 
-    if (datePicker) {
-        val state = rememberDatePickerState(initialSelectedDateMillis = f.preferredDate ?: System.currentTimeMillis())
-        DatePickerDialog(
-            onDismissRequest = { datePicker = false },
-            confirmButton = { TextButton(onClick = { viewModel.update { it.copy(preferredDate = state.selectedDateMillis) }; datePicker = false }) { Text("OK") } },
-            dismissButton = { TextButton(onClick = { datePicker = false }) { Text(stringResource(R.string.action_back)) } },
-        ) { DatePicker(state) }
-    }
+
 }
 
 @Composable

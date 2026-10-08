@@ -10,27 +10,21 @@
     <string name="see_all">عرض الكل</string>
     <string name="hero_kicker">حلول أمنية ذكية</string>
     <string name="hero_title">احمِ ما يهمّك بتقنية احترافية</string>
-    <string name="hero_body">مراقبة، إنذار، تحكم في الدخول، تركيب وصيانة — YOURTECH SYSTEME، بئر الجير، وهران.</string>
+    <string name="hero_body">كاميرات مراقبة، أنظمة إنذار، تحكم في الدخول ومعدات الأمن — YOURTECH SYSTEME، بئر الجير، وهران.</string>
     <string name="open_now">مفتوح الآن • يغلق %1$s</string>
     <string name="closed_now">مغلق الآن • يفتح %1$s %2$s</string>
     <string name="today">اليوم</string>
-    <string name="quick_install">طلب تركيب</string>
-    <string name="quick_support">الدعم الفني</string>
-    <string name="quick_consult">استشارة</string>
     <string name="quick_whatsapp">واتساب</string>
     <string name="quick_call">اتصال</string>
     <string name="section_solutions">حلولنا الأمنية</string>
     <string name="section_products">معدات مختارة</string>
     <string name="section_offers">العروض والأخبار</string>
     <string name="section_testimonials">آراء العملاء</string>
-    <string name="section_projects">مشاريع منجزة</string>
     <string name="section_visit">زورونا</string>
     <string name="solution_benefits">المزايا</string>
     <string name="solution_use_cases">مناسب لـ</string>
     <string name="solution_specs">المواصفات التقنية</string>
     <string name="request_quote">طلب عرض سعر</string>
-    <string name="contact_technician">تواصل مع تقني</string>
-    <string name="request_installation">طلب تركيب</string>
     <string name="products_title">معدات الأمن</string>
     <string name="products_all">الكل</string>
     <string name="search_hint">ابحث عن كاميرا، جهاز تسجيل، إنذار…</string>
@@ -44,7 +38,6 @@
     <string name="product_description">الوصف</string>
     <string name="product_price_on_request">السعر عند الطلب</string>
     <string name="product_warranty">الضمان</string>
-    <string name="product_installation_available">التركيب متوفر</string>
     <string name="stock_in">متوفر</string>
     <string name="stock_low">كمية محدودة</string>
     <string name="stock_out">غير متوفر حالياً</string>
@@ -55,7 +48,7 @@
     <string name="favorites_empty">لا توجد معدات في المفضلة</string>
     <string name="requests_title">طلباتي</string>
     <string name="requests_empty_title">لا توجد طلبات بعد</string>
-    <string name="requests_empty_body">اطلب تركيباً أو صيانة أو استشارة وتابع حالة طلبك هنا.</string>
+    <string name="requests_empty_body">اطلب عرض سعر للمعدات التي تحتاجها وتابع ردّ المتجر هنا.</string>
     <string name="new_request">طلب جديد</string>
     <string name="type_INSTALLATION">طلب تركيب</string>
     <string name="type_MAINTENANCE">صيانة ودعم فني</string>
@@ -83,11 +76,10 @@
     <string name="field_phone">رقم الهاتف</string>
     <string name="field_wilaya">الولاية</string>
     <string name="field_commune">البلدية</string>
-    <string name="field_address">عنوان التركيب</string>
     <string name="field_property">نوع العقار</string>
-    <string name="field_system">نوع النظام</string>
+    <string name="field_system">نوع المعدات (اختياري)</string>
     <string name="field_equipment">فئة المعدات</string>
-    <string name="field_devices">عدد الكاميرات / الأجهزة</string>
+    <string name="field_devices">الكمية</string>
     <string name="field_problem">وصف المشكلة</string>
     <string name="field_date">الموعد المفضل</string>
     <string name="field_date_pick">اختر تاريخاً</string>
@@ -121,9 +113,6 @@
     <string name="request_company_note">ملاحظة الشركة</string>
     <string name="cancel_request">إلغاء الطلب</string>
     <string name="request_local_note">يُحفظ الطلب على هاتفك. تُحدَّث الحالة عند ربط التطبيق بنظام الشركة، أو تواصل معهم عبر واتساب.</string>
-    <string name="portfolio_title">المشاريع المنجزة</string>
-    <string name="portfolio_empty_title">سيتم نشر المشاريع قريباً</string>
-    <string name="portfolio_empty_body">نعرض فقط المشاريع التي وافقت الشركة وأصحابها على نشرها.</string>
     <string name="project_equipment">المعدات المستخدمة</string>
     <string name="project_location">المنطقة</string>
     <string name="contact_title">التواصل والموقع</string>
@@ -140,7 +129,7 @@
     <string name="more_notifications">الإشعارات</string>
     <string name="more_privacy">الخصوصية والأمان</string>
     <string name="more_profile">معلوماتي</string>
-    <string name="about_body">YOURTECH SYSTEME شركة متخصصة في أنظمة الأمن الإلكتروني والمراقبة والحماية الذكية: توريد المعدات، التركيب، الصيانة والدعم الفني، ومرافقة الزبائن من الدراسة حتى التشغيل.</string>
+    <string name="about_body">YOURTECH SYSTEME متجر لبيع معدات الأمن الإلكتروني: كاميرات المراقبة، أنظمة الإنذار، التحكم في الدخول، الإنتركم والأجهزة الذكية. زورونا في المتجر ببئر الجير، وهران.</string>
     <string name="privacy_body">• لا يجمع التطبيق إلا المعلومات التي ترسلها في طلباتك.
 • تُحفظ البيانات على هاتفك، وتُرسل للشركة فقط عندما تختار ذلك (واتساب).
 • تُحذف البيانات الوصفية والموقع من الصور قبل حفظها.

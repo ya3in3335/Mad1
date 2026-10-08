@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Assignment
 import androidx.compose.material.icons.rounded.Business
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Inventory2
 import androidx.compose.material.icons.rounded.PhotoLibrary
@@ -46,7 +45,6 @@ import androidx.navigation.navArgument
 import com.yourtech.systeme.admin.auth.AdminPermission
 import com.yourtech.systeme.admin.auth.AdminUser
 import com.yourtech.systeme.admin.feature.AccountsScreen
-import com.yourtech.systeme.admin.feature.AppointmentsScreen
 import com.yourtech.systeme.admin.feature.AuditLogScreen
 import com.yourtech.systeme.admin.feature.BusinessEditorScreen
 import com.yourtech.systeme.admin.feature.CatalogHubScreen
@@ -61,8 +59,6 @@ import com.yourtech.systeme.admin.feature.LoginScreen
 import com.yourtech.systeme.admin.feature.NewAccountScreen
 import com.yourtech.systeme.admin.feature.ProductEditorScreen
 import com.yourtech.systeme.admin.feature.ProductsAdminScreen
-import com.yourtech.systeme.admin.feature.ProjectEditorScreen
-import com.yourtech.systeme.admin.feature.ProjectsAdminScreen
 import com.yourtech.systeme.admin.feature.PromotionEditorScreen
 import com.yourtech.systeme.admin.feature.PromotionsAdminScreen
 import com.yourtech.systeme.admin.feature.RequestAdminScreen
@@ -83,15 +79,13 @@ private val tabs = listOf(
     Tab("dashboard", "الرئيسية", Icons.Rounded.Dashboard) { it.can(AdminPermission.DASHBOARD) },
     Tab("requests", "الطلبات", Icons.Rounded.Assignment) { it.can(AdminPermission.REQUESTS) },
     Tab("catalog", "الكتالوج", Icons.Rounded.Widgets) { u -> listOf(AdminPermission.PRODUCTS, AdminPermission.INVENTORY, AdminPermission.CATEGORIES, AdminPermission.SERVICES).any(u::can) },
-    Tab("content", "المحتوى", Icons.Rounded.PhotoLibrary) { u -> listOf(AdminPermission.PORTFOLIO, AdminPermission.PROMOTIONS, AdminPermission.TESTIMONIALS, AdminPermission.BUSINESS_INFO).any(u::can) },
+    Tab("content", "المحتوى", Icons.Rounded.PhotoLibrary) { u -> listOf(AdminPermission.PROMOTIONS, AdminPermission.TESTIMONIALS, AdminPermission.BUSINESS_INFO).any(u::can) },
     Tab("settings", "الإعدادات", Icons.Rounded.Settings) { true },
 )
 
 private val shortcuts = listOf(
-    Shortcut("المواعيد", Icons.Rounded.CalendarMonth, "appointments", AdminPermission.APPOINTMENTS),
     Shortcut("منتج جديد", Icons.Rounded.Inventory2, "product/edit", AdminPermission.PRODUCTS),
-    Shortcut("الخدمات", Icons.Rounded.Security, "services", AdminPermission.SERVICES),
-    Shortcut("مشروع جديد", Icons.Rounded.PhotoLibrary, "project/edit", AdminPermission.PORTFOLIO),
+    Shortcut("الحلول", Icons.Rounded.Security, "services", AdminPermission.SERVICES),
     Shortcut("معلومات الشركة", Icons.Rounded.Business, "business", AdminPermission.BUSINESS_INFO),
 )
 
@@ -155,11 +149,10 @@ private fun AdminMain(vm: AdminViewModel, user: AdminUser) {
             val optionalId = listOf(navArgument("id") { type = NavType.StringType; nullable = true; defaultValue = null })
 
             composable("dashboard") { DashboardScreen(vm, shortcuts, open) { nav.navigate("request/$it") } }
-            composable("requests") { Guard(user, AdminPermission.REQUESTS) { RequestsAdminScreen(vm, { nav.navigate("request/$it") }, { open("appointments") }) } }
+            composable("requests") { Guard(user, AdminPermission.REQUESTS) { RequestsAdminScreen(vm) { nav.navigate("request/$it") } } }
             composable("request/{id}", listOf(navArgument("id") { type = NavType.LongType })) {
                 Guard(user, AdminPermission.REQUESTS) { RequestAdminScreen(vm, it.arguments!!.getLong("id"), back) }
             }
-            composable("appointments") { Guard(user, AdminPermission.APPOINTMENTS) { AppointmentsScreen(vm, back) { nav.navigate("request/$it") } } }
 
             composable("catalog") { CatalogHubScreen(vm, open) }
             composable("products") { Guard(user, AdminPermission.PRODUCTS) { ProductsAdminScreen(vm, back) { id -> open(if (id == null) "product/edit" else "product/edit?id=$id") } } }
@@ -177,10 +170,6 @@ private fun AdminMain(vm: AdminViewModel, user: AdminUser) {
             }
 
             composable("content") { ContentHubScreen(vm, open) }
-            composable("projects") { Guard(user, AdminPermission.PORTFOLIO) { ProjectsAdminScreen(vm, back) { id -> open(if (id == null) "project/edit" else "project/edit?id=$id") } } }
-            composable("project/edit?id={id}", optionalId) {
-                Guard(user, AdminPermission.PORTFOLIO) { ProjectEditorScreen(vm, it.arguments?.getString("id")?.toLongOrNull(), back) }
-            }
             composable("promotions") { Guard(user, AdminPermission.PROMOTIONS) { PromotionsAdminScreen(vm, back) { id -> open(if (id == null) "promotion/edit" else "promotion/edit?id=$id") } } }
             composable("promotion/edit?id={id}", optionalId) {
                 Guard(user, AdminPermission.PROMOTIONS) { PromotionEditorScreen(vm, it.arguments?.getString("id")?.toLongOrNull(), back) }

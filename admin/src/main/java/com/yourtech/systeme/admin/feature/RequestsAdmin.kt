@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Assignment
 import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Event
@@ -30,13 +29,10 @@ import androidx.compose.material.icons.rounded.Inventory2
 import androidx.compose.material.icons.rounded.NewReleases
 import androidx.compose.material.icons.rounded.PendingActions
 import androidx.compose.material.icons.rounded.Today
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,7 +79,6 @@ import com.yourtech.systeme.designsystem.component.OutlineButton
 import com.yourtech.systeme.designsystem.component.SectionHeader
 import com.yourtech.systeme.designsystem.component.StatusPill
 import com.yourtech.systeme.designsystem.theme.YT
-import java.util.Calendar
 
 // ---- Dashboard ---------------------------------------------------------------------------------
 
@@ -111,7 +106,6 @@ fun DashboardScreen(vm: AdminViewModel, shortcuts: List<Shortcut>, onOpen: (Stri
             Spacer(Modifier.height(10.dp))
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 StatCard("طلبات مفتوحة", stats.open, Icons.Rounded.PendingActions, YT.Blue, Modifier.weight(1f))
-                StatCard("مواعيد اليوم", stats.scheduledToday, Icons.Rounded.Event, YT.Violet, Modifier.weight(1f))
                 StatCard("مكتملة", stats.completed, Icons.Rounded.CheckCircle, YT.Success, Modifier.weight(1f))
             }
         }
@@ -132,7 +126,7 @@ fun DashboardScreen(vm: AdminViewModel, shortcuts: List<Shortcut>, onOpen: (Stri
         }
         item { SectionHeader("أحدث الطلبات") }
         if (requests.isEmpty()) {
-            item { EmptyState(Icons.Rounded.Assignment, "لا توجد طلبات بعد", "تظهر هنا طلبات التركيب والصيانة عند ربط التطبيق بالخادم.") }
+            item { EmptyState(Icons.Rounded.Assignment, "لا توجد طلبات بعد", "تظهر هنا طلبات عروض الأسعار عند ربط التطبيق بالخادم.") }
         }
         items(requests.take(6), key = { it.request.id }) { r ->
             RequestRow(r, Modifier.padding(horizontal = 16.dp, vertical = 5.dp)) { onRequest(r.request.id) }
@@ -163,61 +157,31 @@ fun RequestRow(r: RequestWithDetails, modifier: Modifier = Modifier, onClick: ()
         }
         Spacer(Modifier.height(6.dp))
         val wilaya = Wilayas.fromStorage(q.wilaya)?.label(AppLanguage.ARABIC) ?: q.wilaya
-        Text("$wilaya • ${q.commune} • ${dateAr(q.createdAt)}", style = MaterialTheme.typography.bodySmall, color = YT.TextMuted, maxLines = 1)
-        q.scheduledAt?.let { Text("الموعد: ${dateAr(it, true)}", style = MaterialTheme.typography.bodySmall, color = YT.Cyan) }
+        Text(listOf(wilaya, dateAr(q.createdAt)).filter { it.isNotBlank() }.joinToString(" • "), style = MaterialTheme.typography.bodySmall, color = YT.TextMuted, maxLines = 1)
     }
 }
 
 // ---- Requests list -------------------------------------------------------------------------------
 
 @Composable
-fun RequestsAdminScreen(vm: AdminViewModel, onRequest: (Long) -> Unit, onAppointments: () -> Unit) {
+fun RequestsAdminScreen(vm: AdminViewModel, onRequest: (Long) -> Unit) {
     val all by remember { vm.state(vm.repo.requests, emptyList()) }.collectAsStateWithLifecycle()
     var status by rememberSaveable { mutableStateOf<String?>("OPEN") }
-    var type by rememberSaveable { mutableStateOf<String?>(null) }
     val list = all.filter { r ->
         val s = r.request.status
-        (status == null || (status == "OPEN" && s.isOpen) || s.name == status) && (type == null || r.request.type.name == type)
+        (status == null || (status == "OPEN" && s.isOpen) || s.name == status) 
     }
     Column(Modifier.fillMaxSize().background(YT.Navy)) {
-        AdminTopBar("الطلبات", actions = {
-            androidx.compose.material3.IconButton(onClick = onAppointments) { androidx.compose.material3.Icon(Icons.Rounded.CalendarMonth, "المواعيد", tint = YT.Cyan) }
-        })
+        AdminTopBar("طلبات عروض الأسعار")
         Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Chip("المفتوحة", status == "OPEN", { status = "OPEN" })
             Chip("الكل", status == null, { status = null })
-            RequestStatus.entries.forEach { s -> Chip("${s.ar} (${all.count { it.request.status == s }})", status == s.name, { status = s.name }) }
+            RequestStatus.timeline.forEach { s -> Chip("${s.ar} (${all.count { it.request.status == s }})", status == s.name, { status = s.name }) }
         }
         Spacer(Modifier.height(8.dp))
-        Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Chip("كل الأنواع", type == null, { type = null })
-            RequestType.entries.forEach { t -> Chip(t.ar, type == t.name, { type = t.name }) }
-        }
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (list.isEmpty()) item { EmptyState(Icons.Rounded.Inventory2, "لا توجد طلبات", "لا توجد طلبات مطابقة لهذا الفلتر.") }
             items(list, key = { it.request.id }) { r -> RequestRow(r) { onRequest(r.request.id) } }
-        }
-    }
-}
-
-@Composable
-fun AppointmentsScreen(vm: AdminViewModel, onBack: () -> Unit, onRequest: (Long) -> Unit) {
-    val list by remember { vm.state(vm.repo.appointments, emptyList()) }.collectAsStateWithLifecycle()
-    Column(Modifier.fillMaxSize().background(YT.Navy)) {
-        AdminTopBar("المواعيد", onBack)
-        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (list.isEmpty()) item { EmptyState(Icons.Rounded.CalendarMonth, "لا توجد مواعيد", "حدّد موعدًا من صفحة الطلب ليظهر هنا.") }
-            var lastDay = ""
-            list.forEach { r ->
-                val day = dateAr(r.request.scheduledAt!!)
-                if (day != lastDay) {
-                    lastDay = day
-                    item(key = "d$day") { Text(day, style = MaterialTheme.typography.titleSmall, color = YT.Cyan, modifier = Modifier.padding(top = 6.dp)) }
-                }
-                item(key = r.request.id) {
-                    RequestRow(r) { onRequest(r.request.id) }
-                }
-            }
         }
     }
 }
@@ -237,11 +201,8 @@ fun RequestAdminScreen(vm: AdminViewModel, id: Long, onBack: () -> Unit) {
     }
     val q = r.request
     var note by remember(q.id) { mutableStateOf("") }
-    var scheduled by remember(q.id, q.scheduledAt) { mutableStateOf(q.scheduledAt) }
     var quote by remember(q.id) { mutableStateOf(q.quoteAmountDzd?.toString().orEmpty()) }
     var companyNote by remember(q.id) { mutableStateOf(q.companyNote) }
-    var assigned by remember(q.id) { mutableStateOf(q.assignedTo) }
-    var showDate by remember { mutableStateOf(false) }
     val system = q.systemType?.let { sys -> services.firstOrNull { it.id == sys }?.name(AppLanguage.ARABIC) ?: categories.firstOrNull { it.id == sys }?.name(AppLanguage.ARABIC) ?: sys }
 
     Column(Modifier.fillMaxSize().background(YT.Navy).imePadding()) {
@@ -257,20 +218,16 @@ fun RequestAdminScreen(vm: AdminViewModel, id: Long, onBack: () -> Unit) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     OutlineButton("اتصال", { AdminLauncher.call(context, q.phone) }, Modifier.weight(1f), icon = Icons.Rounded.Call)
                     OutlineButton("واتساب", {
-                        AdminLauncher.whatsapp(context, q.phone, "السلام عليكم ${q.customerName}، معكم YOURTECH SYSTEME بخصوص طلبكم ${q.reference}.")
+                        AdminLauncher.whatsapp(context, q.phone, "السلام عليكم ${q.customerName}، معكم YOURTECH SYSTEME بخصوص طلب عرض السعر ${q.reference}.")
                     }, Modifier.weight(1f), icon = Icons.Rounded.Chat, tint = YT.Success)
                 }
             }
             FormSection("التفاصيل") {
                 val wilaya = Wilayas.fromStorage(q.wilaya)?.label(AppLanguage.ARABIC) ?: q.wilaya
-                KeyValueRow("الموقع", "$wilaya • ${q.commune}")
-                if (q.address.isNotBlank()) KeyValueRow("العنوان", q.address)
-                q.propertyType?.let { KeyValueRow("نوع العقار", it.ar) }
-                system?.let { KeyValueRow("النظام / المعدات", it) }
-                q.deviceCount?.let { KeyValueRow("عدد الأجهزة", it.toString()) }
+                if (q.wilaya.isNotBlank()) KeyValueRow("الولاية", wilaya)
+                system?.let { KeyValueRow("نوع المعدات", it) }
+                q.deviceCount?.let { KeyValueRow("الكمية", it.toString()) }
                 q.productId?.let { KeyValueRow("المنتج", it) }
-                q.preferredDate?.let { KeyValueRow("التاريخ المفضل", dateAr(it)) }
-                if (q.problemDescription.isNotBlank()) KeyValueRow("وصف المشكلة", q.problemDescription)
                 if (q.notes.isNotBlank()) KeyValueRow("ملاحظات العميل", q.notes)
                 KeyValueRow("تاريخ الإرسال", dateAr(q.createdAt, true))
                 if (r.photos.isNotEmpty()) {
@@ -295,26 +252,11 @@ fun RequestAdminScreen(vm: AdminViewModel, id: Long, onBack: () -> Unit) {
                         com.yourtech.systeme.admin.ui.DeleteButton("إلغاء الطلب", { vm.run("تم إلغاء الطلب") { vm.repo.updateStatus(q.id, RequestStatus.CANCELLED, note) } })
                     }
                 }
-                FormSection("الموعد وعرض السعر") {
-                    OutlineButton(scheduled?.let { "الموعد: ${dateAr(it, true)}" } ?: "تحديد تاريخ الموعد", { showDate = true }, Modifier.fillMaxWidth(), icon = Icons.Rounded.CalendarMonth)
-                    if (scheduled != null) {
-                        Text("الساعة", style = MaterialTheme.typography.labelLarge, color = YT.TextMuted)
-                        Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            val cal = Calendar.getInstance(BusinessHours.ALGIERS).apply { timeInMillis = scheduled!! }
-                            val current = cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE)
-                            (16..34).map { it * 30 }.forEach { m ->
-                                Chip(BusinessHours.hhmm(m), m == current, {
-                                    scheduled = cal.apply { set(Calendar.HOUR_OF_DAY, m / 60); set(Calendar.MINUTE, m % 60) }.timeInMillis
-                                })
-                            }
-                        }
-                        TextButton({ scheduled = null }) { Text("إزالة الموعد", color = YT.Danger) }
-                    }
+                FormSection("عرض السعر") {
                     Field(quote, { quote = it.filter(Char::isDigit) }, "مبلغ عرض السعر (د.ج)", keyboard = KeyboardType.Number, maxLength = 9,
                         hint = quote.toIntOrNull()?.let { Money.format(it, AppLanguage.ARABIC) })
-                    Field(assigned, { assigned = it }, "التقني المكلّف", maxLength = 80)
                     Field(companyNote, { companyNote = it }, "ملاحظة الشركة (تظهر للعميل)", singleLine = false, minLines = 2, maxLength = 1000)
-                    GradientButton("حفظ", { vm.run("تم الحفظ") { vm.repo.saveRequestDetails(q.id, scheduled, quote, companyNote, assigned) } }, Modifier.fillMaxWidth())
+                    GradientButton("حفظ", { vm.run("تم الحفظ") { vm.repo.saveRequestDetails(q.id, q.scheduledAt, quote, companyNote, q.assignedTo) } }, Modifier.fillMaxWidth())
                 }
             }
             FormSection("السجل") {
@@ -331,23 +273,5 @@ fun RequestAdminScreen(vm: AdminViewModel, id: Long, onBack: () -> Unit) {
             }
             Spacer(Modifier.height(24.dp))
         }
-    }
-    if (showDate) {
-        val state = rememberDatePickerState(initialSelectedDateMillis = scheduled ?: System.currentTimeMillis())
-        DatePickerDialog(
-            onDismissRequest = { showDate = false },
-            confirmButton = {
-                TextButton({
-                    state.selectedDateMillis?.let { utc ->
-                        val day = Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC")).apply { timeInMillis = utc }
-                        scheduled = Calendar.getInstance(BusinessHours.ALGIERS).apply {
-                            clear(); set(day.get(Calendar.YEAR), day.get(Calendar.MONTH), day.get(Calendar.DAY_OF_MONTH), 9, 0)
-                        }.timeInMillis
-                    }
-                    showDate = false
-                }) { Text("تأكيد") }
-            },
-            dismissButton = { TextButton({ showDate = false }) { Text("إلغاء") } },
-        ) { DatePicker(state) }
     }
 }

@@ -54,9 +54,7 @@ import com.yourtech.systeme.feature.more.AboutScreen
 import com.yourtech.systeme.feature.more.ContactScreen
 import com.yourtech.systeme.feature.more.MoreScreen
 import com.yourtech.systeme.feature.more.NotificationsScreen
-import com.yourtech.systeme.feature.more.PortfolioScreen
 import com.yourtech.systeme.feature.more.PrivacyScreen
-import com.yourtech.systeme.feature.more.ProjectScreen
 import com.yourtech.systeme.feature.products.FavoritesScreen
 import com.yourtech.systeme.feature.products.ProductDetailScreen
 import com.yourtech.systeme.feature.products.ProductsScreen
@@ -79,8 +77,6 @@ object Routes {
     const val REQUEST_NEW = "request/new?type={type}&system={system}&product={product}"
     const val REQUEST = "request/{id}"
     const val REQUEST_SENT = "request/sent/{id}"
-    const val PORTFOLIO = "portfolio"
-    const val PROJECT = "project/{id}"
     const val CONTACT = "contact"
     const val ABOUT = "about"
     const val PRIVACY = "privacy"
@@ -162,14 +158,11 @@ private fun androidx.navigation.NavGraphBuilder.graph(nav: NavHostController, on
 
     composable(Routes.HOME) {
         HomeScreen(
-            onInstallation = { nav.navigate(Routes.newRequest(RequestType.INSTALLATION)) },
-            onSupport = { nav.navigate(Routes.newRequest(RequestType.MAINTENANCE)) },
+            onQuote = { nav.navigate(Routes.newRequest(RequestType.QUOTE)) },
             onSolution = { nav.navigate("solution/$it") },
             onSolutions = { nav.switchTab(Routes.SOLUTIONS) },
             onProduct = { nav.navigate("product/$it") },
             onProducts = { nav.switchTab(Routes.PRODUCTS) },
-            onProject = { nav.navigate("project/$it") },
-            onPortfolio = { nav.navigate(Routes.PORTFOLIO) },
             onContact = { nav.navigate(Routes.CONTACT) },
             onNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
         )
@@ -179,7 +172,7 @@ private fun androidx.navigation.NavGraphBuilder.graph(nav: NavHostController, on
         SolutionDetailScreen(
             onBack = back,
             onQuote = { nav.navigate(Routes.newRequest(RequestType.QUOTE, system = it)) },
-            onInstallation = { nav.navigate(Routes.newRequest(RequestType.INSTALLATION, system = it)) },
+            onProducts = { nav.switchTab(Routes.PRODUCTS) },
         )
     }
     composable(Routes.PRODUCTS) {
@@ -211,8 +204,6 @@ private fun androidx.navigation.NavGraphBuilder.graph(nav: NavHostController, on
         )
     }
     composable(Routes.REQUEST, idArg) { RequestDetailScreen(onBack = back) }
-    composable(Routes.PORTFOLIO) { PortfolioScreen(onBack = back, onProject = { nav.navigate("project/$it") }) }
-    composable(Routes.PROJECT, idArg) { ProjectScreen(onBack = back) }
     composable(Routes.CONTACT) { ContactScreen(onBack = back) }
     composable(Routes.ABOUT) { AboutScreen(onBack = back) }
     composable(Routes.PRIVACY) { PrivacyScreen(onBack = back) }
@@ -220,7 +211,6 @@ private fun androidx.navigation.NavGraphBuilder.graph(nav: NavHostController, on
     composable(Routes.MORE) {
         MoreScreen(
             onContact = { nav.navigate(Routes.CONTACT) },
-            onPortfolio = { nav.navigate(Routes.PORTFOLIO) },
             onFavorites = { nav.navigate(Routes.FAVORITES) },
             onNotifications = { nav.navigate(Routes.NOTIFICATIONS) },
             onAbout = { nav.navigate(Routes.ABOUT) },

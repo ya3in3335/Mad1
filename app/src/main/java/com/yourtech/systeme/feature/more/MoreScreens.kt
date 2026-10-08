@@ -61,7 +61,6 @@ import com.yourtech.systeme.BuildConfig
 import com.yourtech.systeme.R
 import com.yourtech.systeme.data.local.entity.BusinessInfoEntity
 import com.yourtech.systeme.data.local.entity.NotificationEntity
-import com.yourtech.systeme.data.local.entity.ProjectEntity
 import com.yourtech.systeme.data.model.AppLanguage
 import com.yourtech.systeme.data.model.BusinessDefaults
 import com.yourtech.systeme.data.model.BusinessHours
@@ -105,7 +104,7 @@ class BusinessViewModel @Inject constructor(content: ContentRepository) : ViewMo
 
 @Composable
 fun MoreScreen(
-    onContact: () -> Unit, onPortfolio: () -> Unit, onFavorites: () -> Unit, onNotifications: () -> Unit,
+    onContact: () -> Unit, onFavorites: () -> Unit, onNotifications: () -> Unit,
     onAbout: () -> Unit, onPrivacy: () -> Unit, onLanguage: (AppLanguage) -> Unit,
 ) {
     val l = LocalLanguage.current
@@ -114,7 +113,6 @@ fun MoreScreen(
         Spacer(Modifier.height(20.dp))
         MenuGroup {
             MenuItem(Icons.Rounded.Storefront, stringResource(R.string.contact_title), onContact)
-            MenuItem(Icons.Rounded.PhotoLibrary, stringResource(R.string.portfolio_title), onPortfolio)
             MenuItem(Icons.Rounded.Favorite, stringResource(R.string.favorites), onFavorites)
             MenuItem(Icons.Rounded.Notifications, stringResource(R.string.more_notifications), onNotifications)
         }
@@ -280,64 +278,3 @@ fun NotificationsScreen(onBack: () -> Unit, onRequest: (Long) -> Unit, viewModel
         }
     }
 }
-
-// ---------------------------------------------------------------------------------------------
-// Portfolio
-// ---------------------------------------------------------------------------------------------
-
-@HiltViewModel
-class PortfolioViewModel @Inject constructor(content: ContentRepository) : ViewModel() {
-    val projects: StateFlow<List<ProjectEntity>?> = content.projects.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-}
-
-@Composable
-fun PortfolioScreen(onBack: () -> Unit, onProject: (Long) -> Unit, viewModel: PortfolioViewModel = hiltViewModel()) {
-    val list by viewModel.projects.collectAsStateWithLifecycle()
-    Column(Modifier.fillMaxSize()) {
-        TopBar(stringResource(R.string.portfolio_title), onBack)
-        val items = list ?: return@Column
-        if (items.isEmpty()) { EmptyState(Icons.Rounded.PhotoLibrary, stringResource(R.string.portfolio_empty_title), stringResource(R.string.portfolio_empty_body)); return@Column }
-        LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            items(items, key = { it.id }) { p ->
-                Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(YT.Surface).pressable { onProject(p.id) }) {
-                    MediaImage(p.photos.lines().firstOrNull { it.isNotBlank() }, "camera", Modifier.fillMaxWidth().aspectRatio(1.7f))
-                    Column(Modifier.padding(14.dp)) {
-                        Text(p.title, style = MaterialTheme.typography.titleMedium)
-                        if (p.generalLocation.isNotBlank()) Text(p.generalLocation, style = MaterialTheme.typography.bodySmall, color = YT.TextMuted)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@HiltViewModel
-class ProjectViewModel @Inject constructor(saved: SavedStateHandle, content: ContentRepository) : ViewModel() {
-    val project: StateFlow<ProjectEntity?> = content.project(checkNotNull(saved.get<String>("id")).toLong()).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-}
-
-@Composable
-fun ProjectScreen(onBack: () -> Unit, viewModel: ProjectViewModel = hiltViewModel()) {
-    val p by viewModel.project.collectAsStateWithLifecycle()
-    val l = LocalLanguage.current
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        TopBar(p?.title.orEmpty(), onBack)
-        val pr = p ?: return@Column
-        val photos = pr.photos.lines().filter { it.isNotBlank() }
-        if (photos.isNotEmpty()) {
-            val pager = rememberPagerState { photos.size }
-            HorizontalPager(pager, Modifier.fillMaxWidth().aspectRatio(1.4f)) { i -> MediaImage(photos[i], "camera", Modifier.fillMaxSize()) }
-        }
-        Column(Modifier.padding(20.dp)) {
-            Text(pr.title, style = MaterialTheme.typography.headlineSmall)
-            pr.completedAt?.let { Text(formatDate(it, l), style = MaterialTheme.typography.bodySmall, color = YT.TextMuted) }
-            if (pr.description.isNotBlank()) { Spacer(Modifier.height(10.dp)); Text(pr.description, style = MaterialTheme.typography.bodyLarge, color = YT.TextMuted) }
-            Spacer(Modifier.height(14.dp))
-            GlassCard(Modifier.fillMaxWidth()) {
-                if (pr.generalLocation.isNotBlank()) KeyValueRow(stringResource(R.string.project_location), pr.generalLocation)
-                if (pr.equipment.isNotBlank()) KeyValueRow(stringResource(R.string.project_equipment), pr.equipment)
-            }
-        }
-    }
-}
-

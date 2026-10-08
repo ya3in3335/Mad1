@@ -36,7 +36,7 @@ class PasswordHasherTest {
     @Test fun rolePermissions() {
         assertTrue(AdminRole.OWNER.permissions.contains(AdminPermission.ACCOUNTS))
         assertFalse(AdminRole.MANAGER.permissions.contains(AdminPermission.ACCOUNTS))
-        assertFalse(AdminRole.TECHNICIAN.permissions.contains(AdminPermission.PRODUCTS))
+        assertTrue(AdminRole.STAFF.permissions.contains(AdminPermission.PRODUCTS))
         assertFalse(AdminRole.STAFF.permissions.contains(AdminPermission.BUSINESS_INFO))
     }
 }

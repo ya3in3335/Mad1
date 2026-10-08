@@ -38,23 +38,9 @@ data class RequestForm(
     fun validate(now: Long = System.currentTimeMillis()): Set<Field> = buildSet {
         if (customerName.trim().length < 3) add(Field.NAME)
         if (!Validation.isValidAlgerianPhone(phone)) add(Field.PHONE)
-        if (wilaya == null) add(Field.WILAYA)
-        if (commune.trim().length < 2) add(Field.COMMUNE)
         val count = deviceCount.trim()
-        if (count.isNotEmpty() && (count.toIntOrNull() == null || count.toInt() !in 1..500)) add(Field.DEVICES)
+        if (count.isNotEmpty() && (count.toIntOrNull() == null || count.toInt() !in 1..999)) add(Field.DEVICES)
         if (preferredDate != null && preferredDate < now - 24 * 3600_000L) add(Field.DATE)
-        when (type) {
-            RequestType.INSTALLATION -> {
-                if (address.trim().length < 5) add(Field.ADDRESS)
-                if (propertyType == null) add(Field.PROPERTY)
-                if (systemType == null) add(Field.SYSTEM)
-            }
-            RequestType.MAINTENANCE -> {
-                if (systemType == null) add(Field.SYSTEM)
-                if (problemDescription.trim().length < 10) add(Field.PROBLEM)
-            }
-            RequestType.CONSULTATION, RequestType.QUOTE -> Unit
-        }
     }
 
     companion object {

@@ -146,7 +146,6 @@ fun ProductEditorScreen(vm: AdminViewModel, id: String?, onBack: () -> Unit) {
     var stock by remember(base.id) { mutableStateOf(base.stockStatus) }
     var qty by remember(base.id) { mutableStateOf(base.stockQty?.toString().orEmpty()) }
     var warranty by remember(base.id) { mutableStateOf(base.warranty) }
-    var install by remember(base.id) { mutableStateOf(base.installationAvailable) }
     var imageUrl by remember(base.id) { mutableStateOf(base.imageUrl.orEmpty()) }
     var localImage by remember(base.id) { mutableStateOf(base.localImagePath) }
     var photoKey by remember(base.id) { mutableStateOf(base.photoKey) }
@@ -163,7 +162,7 @@ fun ProductEditorScreen(vm: AdminViewModel, id: String?, onBack: () -> Unit) {
                 base.copy(
                     name = name, brand = brand, model = model, categoryId = categoryId, description = description, specs = specs,
                     priceDzd = priceValue, stockStatus = stock, stockQty = qty.toIntOrNull(), warranty = warranty,
-                    installationAvailable = install, imageUrl = imageUrl, localImagePath = localImage, photoKey = photoKey,
+                    imageUrl = imageUrl, localImagePath = localImage, photoKey = photoKey,
                     isFeatured = featured, isActive = active,
                 ),
                 isNew = id == null,
@@ -187,7 +186,6 @@ fun ProductEditorScreen(vm: AdminViewModel, id: String?, onBack: () -> Unit) {
             ChoiceRow("حالة المخزون", StockStatus.entries, stock, { it.ar }) { stock = it }
             Field(qty, { qty = it.filter(Char::isDigit) }, "الكمية (اختياري، داخلي)", keyboard = KeyboardType.Number, maxLength = 7)
             Field(warranty, { warranty = it }, "الضمان (فقط ما تقدمه الشركة فعلًا)", maxLength = 200)
-            SwitchRow("التركيب متاح", install, { install = it })
         }
         FormSection("الصورة") {
             MediaImage(localImage ?: imageUrl.ifBlank { null }, photoKey ?: SecurityVisuals.keyFor(name) ?: "camera", Modifier.fillMaxWidth().aspectRatio(16 / 10f).clip(RoundedCornerShape(16.dp)))
@@ -303,12 +301,12 @@ fun CategoryEditorScreen(vm: AdminViewModel, id: String?, onBack: () -> Unit) {
 @Composable
 fun ServicesScreen(vm: AdminViewModel, onBack: () -> Unit, onEdit: (String?) -> Unit) {
     val list by remember { vm.state(vm.repo.services, emptyList()) }.collectAsStateWithLifecycle()
-    androidx.compose.material3.Scaffold(containerColor = YT.Navy, floatingActionButton = { AddFab("خدمة جديدة") { onEdit(null) } }) { pad ->
+    androidx.compose.material3.Scaffold(containerColor = YT.Navy, floatingActionButton = { AddFab("حل جديد") { onEdit(null) } }) { pad ->
         LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(bottom = 96.dp)) {
             item {
-                AdminTopBar("الخدمات والحلول", onBack)
+                AdminTopBar("الحلول الأمنية", onBack)
                 Text(
-                    "هذه قائمة مقترحة. فعّل فقط الخدمات التي تقدمها الشركة فعلًا؛ الخدمات المعطّلة لا تظهر للعملاء.",
+                    "فئات المعدات المعروضة للبيع. فعّل فقط ما يبيعه المتجر فعلًا؛ الفئات المعطّلة لا تظهر للعملاء.",
                     style = MaterialTheme.typography.bodySmall, color = YT.Warning, modifier = Modifier.padding(horizontal = 16.dp),
                 )
                 Spacer(Modifier.height(8.dp))
@@ -335,12 +333,12 @@ fun ServiceEditorScreen(vm: AdminViewModel, id: String?, onBack: () -> Unit) {
     val list by remember { vm.state(vm.repo.services, emptyList()) }.collectAsStateWithLifecycle()
     val base = list.firstOrNull { it.id == id }
         ?: if (id == null) ServiceCategoryEntity("svc_" + java.util.UUID.randomUUID().toString().take(8), "", "", "", "", "", "", sortOrder = list.size, isActive = false) else null
-    if (base == null) { Column(Modifier.fillMaxSize().background(YT.Navy)) { AdminTopBar("خدمة", onBack) }; return }
+    if (base == null) { Column(Modifier.fillMaxSize().background(YT.Navy)) { AdminTopBar("حل", onBack) }; return }
     var s by remember(base.id) { mutableStateOf(base) }
     var lang by rememberSaveable { mutableStateOf(AppLanguage.ARABIC) }
-    EditorPage(if (id == null) "خدمة جديدة" else "تعديل خدمة", onBack, onSave = { vm.run("تم الحفظ", onBack) { vm.repo.saveService(s) } }) {
+    EditorPage(if (id == null) "حل جديد" else "تعديل حل", onBack, onSave = { vm.run("تم الحفظ", onBack) { vm.repo.saveService(s) } }) {
         FormSection("الحالة") {
-            SwitchRow("الشركة تقدم هذه الخدمة (إظهارها للعملاء)", s.isActive, { s = s.copy(isActive = it) }, "لا تفعّلها قبل التأكد")
+            SwitchRow("المتجر يبيع هذا النوع (إظهاره للعملاء)", s.isActive, { s = s.copy(isActive = it) }, "لا تفعّله قبل التأكد")
             SwitchRow("مميزة في الصفحة الرئيسية", s.isFeatured, { s = s.copy(isFeatured = it) })
             ChoiceRow("الرسم التوضيحي", SecurityVisuals.all, SecurityVisuals.entry(s.photoKey), { it.label }) { s = s.copy(photoKey = it.key, iconKey = it.key) }
         }
@@ -385,7 +383,7 @@ fun CatalogHubScreen(vm: AdminViewModel, onOpen: (String) -> Unit) {
             Triple("المنتجات", Icons.Rounded.Inventory2, "products") to com.yourtech.systeme.admin.auth.AdminPermission.PRODUCTS,
             Triple("المخزون", Icons.Rounded.Search, "inventory") to com.yourtech.systeme.admin.auth.AdminPermission.INVENTORY,
             Triple("فئات المعدات", Icons.Rounded.Category, "categories") to com.yourtech.systeme.admin.auth.AdminPermission.CATEGORIES,
-            Triple("الخدمات والحلول", Icons.Rounded.Security, "services") to com.yourtech.systeme.admin.auth.AdminPermission.SERVICES,
+            Triple("الحلول الأمنية", Icons.Rounded.Security, "services") to com.yourtech.systeme.admin.auth.AdminPermission.SERVICES,
         ).filter { user?.can(it.second) == true }.map { it.first },
         onOpen,
     )

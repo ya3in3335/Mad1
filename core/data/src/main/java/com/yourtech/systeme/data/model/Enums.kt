@@ -14,28 +14,23 @@ enum class RequestStatus {
     val isTerminal get() = this == COMPLETED || this == CANCELLED
     val isOpen get() = !isTerminal
 
+    /** The shop only sells: a quote request is reviewed, priced, then closed. */
     fun next(): RequestStatus? = when (this) {
         SUBMITTED -> UNDER_REVIEW
         UNDER_REVIEW -> QUOTATION_PREPARED
-        QUOTATION_PREPARED -> APPROVED
-        APPROVED -> SCHEDULED
-        SCHEDULED -> IN_PROGRESS
-        IN_PROGRESS -> COMPLETED
-        COMPLETED, CANCELLED -> null
+        QUOTATION_PREPARED -> COMPLETED
+        else -> null
     }
 
-    /**
-     * Forward moves only. Maintenance tickets may skip the quotation steps
-     * (UNDER_REVIEW → SCHEDULED); a request can be cancelled until work starts.
-     */
+    /** Forward moves along [timeline] only; a request can be cancelled until it is completed. */
     fun canTransitionTo(target: RequestStatus): Boolean = when {
-        target == CANCELLED -> this.ordinal <= SCHEDULED.ordinal
         isTerminal -> false
-        else -> target.ordinal > ordinal && target != CANCELLED
+        target == CANCELLED -> true
+        else -> target in timeline && target.ordinal > ordinal
     }
 
     companion object {
-        val timeline = listOf(SUBMITTED, UNDER_REVIEW, QUOTATION_PREPARED, APPROVED, SCHEDULED, IN_PROGRESS, COMPLETED)
+        val timeline = listOf(SUBMITTED, UNDER_REVIEW, QUOTATION_PREPARED, COMPLETED)
         val open = entries.filter { it.isOpen }
     }
 }

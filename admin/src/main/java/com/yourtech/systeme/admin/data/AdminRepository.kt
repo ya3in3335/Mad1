@@ -9,7 +9,6 @@ import com.yourtech.systeme.data.local.entity.AuditLogEntity
 import com.yourtech.systeme.data.local.entity.BusinessInfoEntity
 import com.yourtech.systeme.data.local.entity.ProductCategoryEntity
 import com.yourtech.systeme.data.local.entity.ProductEntity
-import com.yourtech.systeme.data.local.entity.ProjectEntity
 import com.yourtech.systeme.data.local.entity.PromotionEntity
 import com.yourtech.systeme.data.local.entity.ServiceCategoryEntity
 import com.yourtech.systeme.data.local.entity.TestimonialEntity
@@ -55,8 +54,6 @@ class AdminRepository @Inject constructor(
     val productCategories = catalog.allProductCategories()
     val services = catalog.allServices()
     fun service(id: String) = catalog.service(id)
-    val projects = content.allProjects()
-    fun project(id: Long) = content.project(id)
     val promotions = content.allPromotions()
     val testimonials = content.allTestimonials()
     val business: Flow<BusinessInfoEntity> = content.businessInfo().map { it ?: BusinessDefaults.info }
@@ -157,27 +154,6 @@ class AdminRepository @Inject constructor(
     }
 
     // ---- Portfolio, promotions, testimonials --------------------------------------------------
-    suspend fun saveProject(p: ProjectEntity) {
-        val u = require(AdminPermission.PORTFOLIO)
-        if (p.title.isBlank()) throw AdminException("أدخل عنوان المشروع")
-        if (p.isPublished && !p.clientPermissionConfirmed) throw AdminException("لا يمكن النشر دون تأكيد موافقة العميل")
-        val photos = p.photos.lines().map { it.trim() }.filter { it.isNotEmpty() }
-        if (photos.any { !it.startsWith("/") && !Validation.isHttpsUrl(it) }) throw AdminException("روابط الصور يجب أن تبدأ بـ https://")
-        val old = if (p.id != 0L) content.getProject(p.id) else null
-        old?.photos?.lines()?.filter { it.startsWith("/") && it !in photos }?.forEach { images.delete(it) }
-        val saved = p.copy(title = Validation.clean(p.title, 120), generalLocation = Validation.clean(p.generalLocation, 60), description = Validation.clean(p.description), equipment = Validation.clean(p.equipment, 500), photos = photos.joinToString("\n"))
-        val id = content.upsertProject(saved).takeIf { it > 0 } ?: p.id
-        log(u, if (p.id == 0L) "PROJECT_CREATED" else if (p.isPublished) "PROJECT_PUBLISHED" else "PROJECT_UPDATED", "project", id.toString(), saved.title)
-    }
-
-    suspend fun deleteProject(id: Long) {
-        val u = require(AdminPermission.PORTFOLIO)
-        val p = content.getProject(id) ?: return
-        content.deleteProject(id)
-        p.photos.lines().filter { it.startsWith("/") }.forEach { images.delete(it) }
-        log(u, "PROJECT_DELETED", "project", id.toString(), p.title)
-    }
-
     suspend fun savePromotion(p: PromotionEntity) {
         val u = require(AdminPermission.PROMOTIONS)
         if (p.title.isBlank()) throw AdminException("أدخل عنوان العرض")

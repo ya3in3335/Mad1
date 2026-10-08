@@ -11,14 +11,15 @@ import org.junit.Test
 class RequestStatusTest {
     @Test fun forwardOnly() {
         assertTrue(RequestStatus.SUBMITTED.canTransitionTo(RequestStatus.UNDER_REVIEW))
-        assertTrue(RequestStatus.UNDER_REVIEW.canTransitionTo(RequestStatus.SCHEDULED)) // maintenance skips the quote
-        assertFalse(RequestStatus.SCHEDULED.canTransitionTo(RequestStatus.UNDER_REVIEW))
-        assertFalse(RequestStatus.COMPLETED.canTransitionTo(RequestStatus.IN_PROGRESS))
+        assertTrue(RequestStatus.UNDER_REVIEW.canTransitionTo(RequestStatus.COMPLETED))
+        assertFalse(RequestStatus.QUOTATION_PREPARED.canTransitionTo(RequestStatus.UNDER_REVIEW))
+        assertFalse(RequestStatus.UNDER_REVIEW.canTransitionTo(RequestStatus.SCHEDULED)) // no installation flow
+        assertFalse(RequestStatus.COMPLETED.canTransitionTo(RequestStatus.QUOTATION_PREPARED))
     }
 
-    @Test fun cancelOnlyBeforeWorkStarts() {
-        assertTrue(RequestStatus.SCHEDULED.canTransitionTo(RequestStatus.CANCELLED))
-        assertFalse(RequestStatus.IN_PROGRESS.canTransitionTo(RequestStatus.CANCELLED))
+    @Test fun cancelUntilCompleted() {
+        assertTrue(RequestStatus.QUOTATION_PREPARED.canTransitionTo(RequestStatus.CANCELLED))
+        assertFalse(RequestStatus.COMPLETED.canTransitionTo(RequestStatus.CANCELLED))
         assertFalse(RequestStatus.CANCELLED.canTransitionTo(RequestStatus.CANCELLED))
     }
 
@@ -30,8 +31,8 @@ class RequestStatusTest {
     }
 
     @Test fun referenceFormat() {
-        val ref = RequestRepository.reference(RequestType.MAINTENANCE, 1_760_000_000_123L)
-        assertTrue(ref, Regex("^YT-SAV-\\d{6}-\\d{4}$").matches(ref))
+        val ref = RequestRepository.reference(RequestType.QUOTE, 1_760_000_000_123L)
+        assertTrue(ref, Regex("^YT-DEV-\\d{6}-\\d{4}$").matches(ref))
     }
 }
 
@@ -58,21 +59,15 @@ class ValidationTest {
 
     private val wilaya = Wilayas.byCode(31)
 
-    @Test fun installationRequiresAddressPropertyAndSystem() {
-        val f = RequestForm(RequestType.INSTALLATION, "Yacine", "0561034149", wilaya, "Bir El Djir")
-        assertEquals(setOf(RequestForm.Field.ADDRESS, RequestForm.Field.PROPERTY, RequestForm.Field.SYSTEM), f.validate())
-        val ok = f.copy(address = "Cité 500 logements", propertyType = PropertyType.HOUSE, systemType = "cctv", deviceCount = "4")
-        assertTrue(ok.validate().isEmpty())
-    }
-
-    @Test fun maintenanceRequiresProblem() {
-        val f = RequestForm(RequestType.MAINTENANCE, "Yacine", "0561034149", wilaya, "Oran", systemType = "recorders", problemDescription = "short")
-        assertEquals(setOf(RequestForm.Field.PROBLEM), f.validate())
+    @Test fun quoteNeedsOnlyNameAndPhone() {
+        val f = RequestForm(RequestType.QUOTE, "Yacine", "0561034149")
+        assertTrue(f.validate().isEmpty())
+        assertEquals(setOf(RequestForm.Field.NAME, RequestForm.Field.PHONE), RequestForm(RequestType.QUOTE, "Ya", "123").validate())
     }
 
     @Test fun rejectsBadDeviceCountAndPastDate() {
         val now = 1_760_000_000_000L
-        val f = RequestForm(RequestType.QUOTE, "Yacine", "0561034149", wilaya, "Oran", deviceCount = "0", preferredDate = now - 3 * 86_400_000L)
+        val f = RequestForm(RequestType.QUOTE, "Yacine", "0561034149", wilaya, deviceCount = "0", preferredDate = now - 3 * 86_400_000L)
         assertEquals(setOf(RequestForm.Field.DEVICES, RequestForm.Field.DATE), f.validate(now))
     }
 }

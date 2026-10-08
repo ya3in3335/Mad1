@@ -131,7 +131,7 @@ fun AccountsScreen(vm: AdminViewModel, onBack: () -> Unit, onNew: () -> Unit) {
 fun NewAccountScreen(vm: AdminViewModel, onBack: () -> Unit) {
     var username by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    var role by remember { mutableStateOf(AdminRole.TECHNICIAN) }
+    var role by remember { mutableStateOf(AdminRole.STAFF) }
     var temp by remember { mutableStateOf("") }
     EditorPage("حساب جديد", onBack, saveText = "إنشاء الحساب", onSave = { vm.run("تم إنشاء الحساب", onBack) { vm.auth.createAccount(username, name, role, temp) } }) {
         FormSection("الحساب") {
@@ -166,12 +166,10 @@ fun AuditLogScreen(vm: AdminViewModel, onBack: () -> Unit) {
 val AdminPermission.ar: String get() = when (this) {
     AdminPermission.DASHBOARD -> "لوحة القيادة"
     AdminPermission.REQUESTS -> "الطلبات"
-    AdminPermission.APPOINTMENTS -> "المواعيد"
     AdminPermission.PRODUCTS -> "المنتجات"
     AdminPermission.CATEGORIES -> "الفئات"
     AdminPermission.SERVICES -> "الخدمات"
     AdminPermission.INVENTORY -> "المخزون"
-    AdminPermission.PORTFOLIO -> "المشاريع"
     AdminPermission.PROMOTIONS -> "العروض"
     AdminPermission.TESTIMONIALS -> "الآراء"
     AdminPermission.BUSINESS_INFO -> "معلومات الشركة"

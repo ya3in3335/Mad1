@@ -111,7 +111,7 @@ class SolutionDetailViewModel @Inject constructor(saved: SavedStateHandle, catal
 fun SolutionDetailScreen(
     onBack: () -> Unit,
     onQuote: (String) -> Unit,
-    onInstallation: (String) -> Unit,
+    onProducts: () -> Unit,
     viewModel: SolutionDetailViewModel = hiltViewModel(),
 ) {
     val svc by viewModel.service.collectAsStateWithLifecycle()
@@ -145,10 +145,10 @@ fun SolutionDetailScreen(
                 .navigationBarsPadding().padding(horizontal = 20.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            GradientButton(stringResource(R.string.request_installation), { onInstallation(s.id) }, Modifier.fillMaxWidth())
+            GradientButton(stringResource(R.string.request_quote), { onQuote(s.id) }, Modifier.fillMaxWidth(), icon = Icons.Rounded.RequestQuote)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlineButton(stringResource(R.string.request_quote), { onQuote(s.id) }, Modifier.weight(1f), icon = Icons.Rounded.RequestQuote)
-                OutlineButton(stringResource(R.string.contact_technician), { Launcher.whatsapp(context, business, waText) }, Modifier.weight(1f), icon = Icons.Rounded.Chat, tint = YT.Success)
+                OutlineButton(stringResource(R.string.tab_products), onProducts, Modifier.weight(1f))
+                OutlineButton(stringResource(R.string.whatsapp_inquiry), { Launcher.whatsapp(context, business, waText) }, Modifier.weight(1f), icon = Icons.Rounded.Chat, tint = YT.Success)
             }
         }
     }

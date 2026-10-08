@@ -214,7 +214,6 @@ fun ProductDetailScreen(onBack: () -> Unit, onQuote: (String) -> Unit, viewModel
                 }
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (e.installationAvailable) StatusPill(stringResource(R.string.product_installation_available), YT.Blue)
                 }
                 if (e.description.isNotBlank()) {
                     Spacer(Modifier.height(16.dp))

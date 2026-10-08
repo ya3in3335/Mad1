@@ -18,8 +18,7 @@ fun requestMessage(context: Context, r: ServiceRequestEntity, systemName: String
     appendLine("• ${context.getString(r.type.label)}")
     appendLine("• ${context.getString(R.string.field_name)}: ${r.customerName}")
     appendLine("• ${context.getString(R.string.field_phone)}: ${r.phone}")
-    appendLine("• ${context.getString(R.string.field_wilaya)}: ${Wilayas.fromStorage(r.wilaya)?.label(language) ?: r.wilaya} — ${r.commune}")
-    if (r.address.isNotBlank()) appendLine("• ${context.getString(R.string.field_address)}: ${r.address}")
+    if (r.wilaya.isNotBlank()) appendLine("• ${context.getString(R.string.field_wilaya)}: ${Wilayas.fromStorage(r.wilaya)?.label(language) ?: r.wilaya}")
     r.propertyType?.let { appendLine("• ${context.getString(R.string.field_property)}: ${context.getString(it.label)}") }
     systemName?.let { appendLine("• ${context.getString(R.string.field_system)}: $it") }
     r.deviceCount?.let { appendLine("• ${context.getString(R.string.field_devices)}: $it") }

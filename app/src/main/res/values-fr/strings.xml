@@ -9,27 +9,21 @@
     <string name="see_all">Voir tout</string>
     <string name="hero_kicker">Solutions de sécurité intelligentes</string>
     <string name="hero_title">Protégez ce qui compte avec une technologie professionnelle</string>
-    <string name="hero_body">Vidéosurveillance, alarme, contrôle d\'accès, installation et maintenance — YOURTECH SYSTEME, Bir El Djir, Oran.</string>
+    <string name="hero_body">Caméras de surveillance, alarmes, contrôle d\'accès et équipements de sécurité — YOURTECH SYSTEME, Bir El Djir, Oran.</string>
     <string name="open_now">Ouvert • ferme à %1$s</string>
     <string name="closed_now">Fermé • ouvre %1$s à %2$s</string>
     <string name="today">aujourd\'hui</string>
-    <string name="quick_install">Installation</string>
-    <string name="quick_support">Support technique</string>
-    <string name="quick_consult">Consultation</string>
     <string name="quick_whatsapp">WhatsApp</string>
     <string name="quick_call">Appeler</string>
     <string name="section_solutions">Nos solutions de sécurité</string>
     <string name="section_products">Équipements à la une</string>
     <string name="section_offers">Offres et actualités</string>
     <string name="section_testimonials">Avis clients</string>
-    <string name="section_projects">Réalisations</string>
     <string name="section_visit">Nous rendre visite</string>
     <string name="solution_benefits">Avantages</string>
     <string name="solution_use_cases">Adapté pour</string>
     <string name="solution_specs">Caractéristiques techniques</string>
     <string name="request_quote">Demander un devis</string>
-    <string name="contact_technician">Contacter un technicien</string>
-    <string name="request_installation">Demander une installation</string>
     <string name="products_title">Équipements de sécurité</string>
     <string name="products_all">Tous</string>
     <string name="search_hint">Rechercher caméra, enregistreur, alarme…</string>
@@ -43,7 +37,6 @@
     <string name="product_description">Description</string>
     <string name="product_price_on_request">Prix sur demande</string>
     <string name="product_warranty">Garantie</string>
-    <string name="product_installation_available">Installation disponible</string>
     <string name="stock_in">En stock</string>
     <string name="stock_low">Stock limité</string>
     <string name="stock_out">Rupture de stock</string>
@@ -54,7 +47,7 @@
     <string name="favorites_empty">Aucun favori</string>
     <string name="requests_title">Mes demandes</string>
     <string name="requests_empty_title">Aucune demande</string>
-    <string name="requests_empty_body">Demandez une installation, une maintenance ou une consultation et suivez-la ici.</string>
+    <string name="requests_empty_body">Demandez un devis pour le matériel qu\'il vous faut et suivez la réponse du magasin ici.</string>
     <string name="new_request">Nouvelle demande</string>
     <string name="type_INSTALLATION">Demande d\'installation</string>
     <string name="type_MAINTENANCE">Maintenance et support</string>
@@ -82,11 +75,10 @@
     <string name="field_phone">Téléphone</string>
     <string name="field_wilaya">Wilaya</string>
     <string name="field_commune">Commune</string>
-    <string name="field_address">Adresse d\'installation</string>
     <string name="field_property">Type de bien</string>
-    <string name="field_system">Type de système</string>
+    <string name="field_system">Type d\'équipement (facultatif)</string>
     <string name="field_equipment">Catégorie d\'équipement</string>
-    <string name="field_devices">Nombre de caméras / appareils</string>
+    <string name="field_devices">Quantité</string>
     <string name="field_problem">Description du problème</string>
     <string name="field_date">Date souhaitée</string>
     <string name="field_date_pick">Choisir une date</string>
@@ -120,9 +112,6 @@
     <string name="request_company_note">Note de l\'entreprise</string>
     <string name="cancel_request">Annuler la demande</string>
     <string name="request_local_note">La demande est enregistrée sur votre téléphone. Le statut sera synchronisé avec le système de l\'entreprise ; sinon contactez-la sur WhatsApp.</string>
-    <string name="portfolio_title">Nos réalisations</string>
-    <string name="portfolio_empty_title">Réalisations bientôt en ligne</string>
-    <string name="portfolio_empty_body">Nous ne publions que les projets approuvés par l\'entreprise et ses clients.</string>
     <string name="project_equipment">Équipements utilisés</string>
     <string name="project_location">Zone</string>
     <string name="contact_title">Contact et localisation</string>
@@ -138,7 +127,7 @@
     <string name="more_notifications">Notifications</string>
     <string name="more_privacy">Confidentialité et sécurité</string>
     <string name="more_profile">Mes informations</string>
-    <string name="about_body">YOURTECH SYSTEME est spécialisée dans la sécurité électronique, la vidéosurveillance et la protection intelligente : fourniture, installation, maintenance et support, de l\'étude à la mise en service.</string>
+    <string name="about_body">YOURTECH SYSTEME est un magasin de matériel de sécurité électronique : caméras de surveillance, alarmes, contrôle d\'accès, interphones et objets connectés. Rendez-nous visite au magasin à Bir El Djir, Oran.</string>
     <string name="privacy_body">• L\'application ne collecte que ce que vous saisissez dans vos demandes.
 • Les données restent sur votre téléphone et ne sont envoyées que si vous le choisissez (WhatsApp).
 • Les métadonnées et la position sont retirées des photos.

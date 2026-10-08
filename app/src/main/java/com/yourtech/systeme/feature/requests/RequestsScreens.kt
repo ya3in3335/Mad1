@@ -115,19 +115,9 @@ fun RequestsScreen(onRequest: (Long) -> Unit, onNew: (RequestType) -> Unit, view
     val l = LocalLanguage.current
     LazyColumn(Modifier.fillMaxSize().statusBarsPadding(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { Text(stringResource(R.string.requests_title), style = MaterialTheme.typography.headlineSmall) }
-        item {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(listOf(RequestType.INSTALLATION, RequestType.MAINTENANCE, RequestType.CONSULTATION, RequestType.QUOTE)) { t ->
-                    Column(Modifier.width(120.dp).clip(RoundedCornerShape(20.dp)).background(YT.Surface).pressable { onNew(t) }.padding(14.dp)) {
-                        IconTile(t.icon, YT.Cyan)
-                        Spacer(Modifier.height(8.dp))
-                        Text(stringResource(t.label), style = MaterialTheme.typography.labelLarge, maxLines = 2)
-                    }
-                }
-            }
-        }
+        item { GradientButton(stringResource(R.string.request_quote), { onNew(RequestType.QUOTE) }, Modifier.fillMaxWidth(), icon = Icons.Rounded.RequestQuote) }
         val l2 = list
-        if (l2 != null && l2.isEmpty()) item { EmptyState(Icons.Rounded.Build, stringResource(R.string.requests_empty_title), stringResource(R.string.requests_empty_body)) }
+        if (l2 != null && l2.isEmpty()) item { EmptyState(Icons.Rounded.RequestQuote, stringResource(R.string.requests_empty_title), stringResource(R.string.requests_empty_body)) }
         items(l2.orEmpty(), key = { it.request.id }) { r ->
             val req = r.request
             Row(
@@ -210,8 +200,7 @@ fun RequestDetailScreen(onBack: () -> Unit, viewModel: RequestDetailViewModel = 
                     if (req.problemDescription.isNotBlank()) KeyValueRow(stringResource(R.string.field_problem), req.problemDescription)
                     KeyValueRow(stringResource(R.string.field_name), req.customerName)
                     KeyValueRow(stringResource(R.string.field_phone), req.phone)
-                    KeyValueRow(stringResource(R.string.field_wilaya), (Wilayas.fromStorage(req.wilaya)?.label(l) ?: req.wilaya) + " — " + req.commune)
-                    if (req.address.isNotBlank()) KeyValueRow(stringResource(R.string.field_address), req.address)
+                    if (req.wilaya.isNotBlank()) KeyValueRow(stringResource(R.string.field_wilaya), Wilayas.fromStorage(req.wilaya)?.label(l) ?: req.wilaya)
                     req.preferredDate?.let { KeyValueRow(stringResource(R.string.field_date), formatDate(it, l)) }
                     if (req.notes.isNotBlank()) KeyValueRow(stringResource(R.string.field_notes), req.notes)
                 }

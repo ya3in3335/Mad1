@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 
 enum class AdminPermission {
-    DASHBOARD, REQUESTS, APPOINTMENTS, PRODUCTS, CATEGORIES, SERVICES, INVENTORY,
-    PORTFOLIO, PROMOTIONS, TESTIMONIALS, BUSINESS_INFO, ACCOUNTS, AUDIT_LOG,
+    DASHBOARD, REQUESTS, PRODUCTS, CATEGORIES, SERVICES, INVENTORY,
+    PROMOTIONS, TESTIMONIALS, BUSINESS_INFO, ACCOUNTS, AUDIT_LOG,
 }
 
 /**
@@ -26,12 +26,11 @@ enum class AdminRole(val labelAr: String, val permissions: Set<AdminPermission>)
     MANAGER("مدير", AdminPermission.entries.toSet() - AdminPermission.ACCOUNTS),
     STAFF(
         "موظف مبيعات",
-        setOf(AdminPermission.DASHBOARD, AdminPermission.REQUESTS, AdminPermission.APPOINTMENTS, AdminPermission.PRODUCTS, AdminPermission.INVENTORY),
-    ),
-    TECHNICIAN("تقني", setOf(AdminPermission.DASHBOARD, AdminPermission.REQUESTS, AdminPermission.APPOINTMENTS));
+        setOf(AdminPermission.DASHBOARD, AdminPermission.REQUESTS, AdminPermission.PRODUCTS, AdminPermission.INVENTORY),
+    );
 
     companion object {
-        fun of(name: String) = entries.firstOrNull { it.name == name } ?: TECHNICIAN
+        fun of(name: String) = entries.firstOrNull { it.name == name } ?: STAFF
     }
 }
 

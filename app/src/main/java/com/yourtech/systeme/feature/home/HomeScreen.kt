@@ -24,14 +24,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.GridView
+import androidx.compose.material.icons.rounded.RequestQuote
 import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.Directions
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Place
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.SupportAgent
 import androidx.compose.material.icons.rounded.Verified
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Badge
@@ -59,7 +59,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.yourtech.systeme.R
 import com.yourtech.systeme.data.local.entity.BusinessInfoEntity
-import com.yourtech.systeme.data.local.entity.ProjectEntity
 import com.yourtech.systeme.data.local.entity.PromotionEntity
 import com.yourtech.systeme.data.local.entity.ServiceCategoryEntity
 import com.yourtech.systeme.data.local.entity.TestimonialEntity
@@ -99,7 +98,6 @@ data class HomeState(
     val services: List<ServiceCategoryEntity> = emptyList(),
     val products: List<Product> = emptyList(),
     val promotions: List<PromotionEntity> = emptyList(),
-    val projects: List<ProjectEntity> = emptyList(),
     val testimonials: List<TestimonialEntity> = emptyList(),
     val unread: Int = 0,
 )
@@ -108,12 +106,12 @@ data class HomeState(
 class HomeViewModel @Inject constructor(private val catalog: CatalogRepository, content: ContentRepository) : ViewModel() {
     val state: StateFlow<HomeState> = combine(
         content.business, catalog.services, catalog.products,
-        combine(content.promotions, content.projects, content.testimonials) { a, b, c -> Triple(a, b, c) },
+        combine(content.promotions, content.testimonials) { a, b -> a to b },
         content.unread,
-    ) { business, services, products, (promos, projects, testimonials), unread ->
+    ) { business, services, products, (promos, testimonials), unread ->
         HomeState(
             business, services, products.filter { it.entity.isFeatured }.ifEmpty { products }.take(8),
-            promos, projects.take(6), testimonials, unread,
+            promos, testimonials, unread,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState())
 
@@ -122,14 +120,11 @@ class HomeViewModel @Inject constructor(private val catalog: CatalogRepository, 
 
 @Composable
 fun HomeScreen(
-    onInstallation: () -> Unit,
-    onSupport: () -> Unit,
+    onQuote: () -> Unit,
     onSolution: (String) -> Unit,
     onSolutions: () -> Unit,
     onProduct: (String) -> Unit,
     onProducts: () -> Unit,
-    onProject: (Long) -> Unit,
-    onPortfolio: () -> Unit,
     onContact: () -> Unit,
     onNotifications: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
@@ -151,12 +146,12 @@ fun HomeScreen(
                 }
             }
         }
-        item { Hero(onInstallation) { Launcher.whatsapp(context, s.business, wa) } }
+        item { Hero(onQuote) { Launcher.whatsapp(context, s.business, wa) } }
         item { OpenStatus(s.business) }
         item {
             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                QuickAction(Icons.Rounded.Build, stringResource(R.string.quick_install), YT.Blue, Modifier.weight(1f), onInstallation)
-                QuickAction(Icons.Rounded.SupportAgent, stringResource(R.string.quick_support), YT.Violet, Modifier.weight(1f), onSupport)
+                QuickAction(Icons.Rounded.RequestQuote, stringResource(R.string.request_quote), YT.Blue, Modifier.weight(1f), onQuote)
+                QuickAction(Icons.Rounded.GridView, stringResource(R.string.tab_products), YT.Gold, Modifier.weight(1f), onProducts)
                 QuickAction(Icons.Rounded.Chat, stringResource(R.string.quick_whatsapp), YT.Success, Modifier.weight(1f)) { Launcher.whatsapp(context, s.business, wa) }
                 QuickAction(Icons.Rounded.Call, stringResource(R.string.quick_call), YT.Cyan, Modifier.weight(1f)) { Launcher.call(context, s.business.phone) }
             }
@@ -213,22 +208,6 @@ fun HomeScreen(
                 }
             }
         }
-        if (s.projects.isNotEmpty()) {
-            item { SectionHeader(stringResource(R.string.section_projects), action = stringResource(R.string.see_all), onAction = onPortfolio) }
-            item {
-                LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(s.projects, key = { it.id }) { pr ->
-                        Column(Modifier.width(240.dp).clip(RoundedCornerShape(22.dp)).background(YT.Surface).pressable { onProject(pr.id) }) {
-                            MediaImage(pr.photos.lines().firstOrNull { it.isNotBlank() }, "camera", Modifier.fillMaxWidth().aspectRatio(1.6f))
-                            Column(Modifier.padding(12.dp)) {
-                                Text(pr.title, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                if (pr.generalLocation.isNotBlank()) Text(pr.generalLocation, style = MaterialTheme.typography.bodySmall, color = YT.TextMuted)
-                            }
-                        }
-                    }
-                }
-            }
-        }
         if (s.testimonials.isNotEmpty()) {
             item { SectionHeader(stringResource(R.string.section_testimonials)) }
             item {
@@ -255,7 +234,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun Hero(onInstallation: () -> Unit, onWhatsApp: () -> Unit) {
+private fun Hero(onQuote: () -> Unit, onWhatsApp: () -> Unit) {
     Box(
         Modifier.padding(20.dp).fillMaxWidth().clip(RoundedCornerShape(28.dp))
             .background(Brush.verticalGradient(listOf(Color(0xFF15233A), YT.Surface)))
@@ -270,7 +249,7 @@ private fun Hero(onInstallation: () -> Unit, onWhatsApp: () -> Unit) {
             Text(stringResource(R.string.hero_body), style = MaterialTheme.typography.bodyMedium, color = YT.TextMuted, modifier = Modifier.fillMaxWidth(0.68f))
             Spacer(Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                GradientButton(stringResource(R.string.request_installation), onInstallation, Modifier.weight(1f))
+                GradientButton(stringResource(R.string.request_quote), onQuote, Modifier.weight(1f))
                 OutlineButton(stringResource(R.string.quick_whatsapp), onWhatsApp, Modifier.weight(0.7f), icon = Icons.Rounded.Chat, tint = YT.Success)
             }
         }

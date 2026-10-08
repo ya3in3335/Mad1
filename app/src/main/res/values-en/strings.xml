@@ -9,27 +9,21 @@
     <string name="see_all">See all</string>
     <string name="hero_kicker">Smart security solutions</string>
     <string name="hero_title">Protect what matters with professional technology</string>
-    <string name="hero_body">Surveillance, alarms, access control, installation and maintenance — YOURTECH SYSTEME, Bir El Djir, Oran.</string>
+    <string name="hero_body">Surveillance cameras, alarms, access control and security equipment — YOURTECH SYSTEME, Bir El Djir, Oran.</string>
     <string name="open_now">Open now • closes %1$s</string>
     <string name="closed_now">Closed • opens %1$s %2$s</string>
     <string name="today">today</string>
-    <string name="quick_install">Installation</string>
-    <string name="quick_support">Tech support</string>
-    <string name="quick_consult">Consultation</string>
     <string name="quick_whatsapp">WhatsApp</string>
     <string name="quick_call">Call</string>
     <string name="section_solutions">Our security solutions</string>
     <string name="section_products">Featured equipment</string>
     <string name="section_offers">Offers &amp; news</string>
     <string name="section_testimonials">Customer reviews</string>
-    <string name="section_projects">Completed projects</string>
     <string name="section_visit">Visit us</string>
     <string name="solution_benefits">Benefits</string>
     <string name="solution_use_cases">Suitable for</string>
     <string name="solution_specs">Technical specifications</string>
     <string name="request_quote">Request a quote</string>
-    <string name="contact_technician">Contact a technician</string>
-    <string name="request_installation">Request installation</string>
     <string name="products_title">Security equipment</string>
     <string name="products_all">All</string>
     <string name="search_hint">Search camera, recorder, alarm…</string>
@@ -43,7 +37,6 @@
     <string name="product_description">Description</string>
     <string name="product_price_on_request">Price on request</string>
     <string name="product_warranty">Warranty</string>
-    <string name="product_installation_available">Installation available</string>
     <string name="stock_in">In stock</string>
     <string name="stock_low">Low stock</string>
     <string name="stock_out">Out of stock</string>
@@ -54,7 +47,7 @@
     <string name="favorites_empty">No favorites yet</string>
     <string name="requests_title">My requests</string>
     <string name="requests_empty_title">No requests yet</string>
-    <string name="requests_empty_body">Request an installation, maintenance or consultation and track it here.</string>
+    <string name="requests_empty_body">Request a quote for the equipment you need and follow the store\'s reply here.</string>
     <string name="new_request">New request</string>
     <string name="type_INSTALLATION">Installation request</string>
     <string name="type_MAINTENANCE">Maintenance &amp; support</string>
@@ -82,11 +75,10 @@
     <string name="field_phone">Phone number</string>
     <string name="field_wilaya">Wilaya</string>
     <string name="field_commune">Commune</string>
-    <string name="field_address">Installation address</string>
     <string name="field_property">Property type</string>
-    <string name="field_system">System type</string>
+    <string name="field_system">Equipment type (optional)</string>
     <string name="field_equipment">Equipment category</string>
-    <string name="field_devices">Number of cameras / devices</string>
+    <string name="field_devices">Quantity</string>
     <string name="field_problem">Problem description</string>
     <string name="field_date">Preferred date</string>
     <string name="field_date_pick">Pick a date</string>
@@ -120,9 +112,6 @@
     <string name="request_company_note">Company note</string>
     <string name="cancel_request">Cancel request</string>
     <string name="request_local_note">The request is saved on your phone. Its status syncs once connected to the company system; meanwhile reach them on WhatsApp.</string>
-    <string name="portfolio_title">Completed projects</string>
-    <string name="portfolio_empty_title">Projects coming soon</string>
-    <string name="portfolio_empty_body">We only publish projects approved by the company and its clients.</string>
     <string name="project_equipment">Equipment used</string>
     <string name="project_location">Area</string>
     <string name="contact_title">Contact &amp; location</string>
@@ -138,7 +127,7 @@
     <string name="more_notifications">Notifications</string>
     <string name="more_privacy">Privacy &amp; security</string>
     <string name="more_profile">My details</string>
-    <string name="about_body">YOURTECH SYSTEME specialises in electronic security, surveillance and smart protection: equipment supply, installation, maintenance and support, from survey to commissioning.</string>
+    <string name="about_body">YOURTECH SYSTEME is a store selling electronic security equipment: surveillance cameras, alarms, access control, intercoms and smart devices. Visit us at the store in Bir El Djir, Oran.</string>
     <string name="privacy_body">• The app only collects what you enter in your requests.
 • Data stays on your phone and is only sent when you choose to (WhatsApp).
 • Metadata and location are removed from photos.

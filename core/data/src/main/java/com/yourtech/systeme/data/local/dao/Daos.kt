@@ -45,6 +45,7 @@ interface CatalogDao {
     suspend fun serviceCount(): Int
 
     @Upsert suspend fun upsertService(item: ServiceCategoryEntity)
+    @Query("DELETE FROM service_categories WHERE id IN (:ids)") suspend fun deleteServices(ids: List<String>)
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun insertServices(items: List<ServiceCategoryEntity>)
 
     // Product categories
