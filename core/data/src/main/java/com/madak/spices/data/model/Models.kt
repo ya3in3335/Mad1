@@ -19,6 +19,10 @@ data class Product(
     val defaultVariant: ProductVariantEntity?
         get() = variants.firstOrNull { it.weightGrams == 100 } ?: sortedVariants.firstOrNull()
     val inStock: Boolean get() = variants.any { it.stock > 0 }
+
+    /** Bundled photo for this product: the owner's choice, else matched from its name. */
+    val photoKey: String?
+        get() = entity.photoKey ?: ProductPhotos.keyFor(entity.nameAr, entity.nameFr, entity.tags)
 }
 
 fun ProductWithVariants.toProduct(favorites: Set<String> = emptySet()) =

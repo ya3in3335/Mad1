@@ -1,6 +1,7 @@
 package com.madak.spices.designsystem.component
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import kotlin.math.cos
 import kotlin.math.sin
@@ -85,11 +87,31 @@ fun ProductArt(color: Color, seed: String, modifier: Modifier = Modifier) {
     }
 }
 
-/** Remote image when available (Coil), always backed by the offline [ProductArt]. */
+/**
+ * Product visual. Priority: remote [imageUrl] (Coil) → bundled real photo for [photoKey] → drawn
+ * [ProductArt] as a last resort. The bundled photo (or the art) is always underneath, so nothing is
+ * blank while a remote image loads or when the device is offline.
+ */
 @Composable
-fun ProductImage(imageUrl: String?, colorArgb: Long, seed: String, modifier: Modifier = Modifier) {
+fun ProductImage(
+    imageUrl: String?,
+    colorArgb: Long,
+    seed: String,
+    modifier: Modifier = Modifier,
+    photoKey: String? = null,
+) {
+    val photo = SpicePhotos.drawableFor(photoKey)
     Box(modifier) {
-        ProductArt(Color(colorArgb), seed, Modifier.fillMaxSize())
+        if (photo != null) {
+            Image(
+                painter = painterResource(photo),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            ProductArt(Color(colorArgb), seed, Modifier.fillMaxSize())
+        }
         if (!imageUrl.isNullOrBlank()) {
             AsyncImage(model = imageUrl, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         }

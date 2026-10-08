@@ -3,6 +3,8 @@ package com.madak.spices.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.madak.spices.data.local.dao.CartDao
 import com.madak.spices.data.local.dao.CatalogDao
 import com.madak.spices.data.local.dao.FavoriteDao
@@ -40,7 +42,7 @@ import com.madak.spices.data.local.entity.UserEntity
         NotificationEntity::class,
         OfferEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -55,5 +57,12 @@ abstract class MadakDatabase : RoomDatabase() {
 
     companion object {
         const val NAME = "madak.db"
+
+        /** v2: products.photoKey (bundled real product photo picked by the owner). */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE products ADD COLUMN photoKey TEXT")
+            }
+        }
     }
 }

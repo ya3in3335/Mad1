@@ -53,6 +53,8 @@ data class ProductEntity(
     val colorArgb: Long,
     /** Optional remote image; the app never depends on it being reachable. */
     val imageUrl: String? = null,
+    /** Bundled library photo chosen by the owner ([com.madak.spices.data.model.ProductPhotos]); null = match by name. */
+    val photoKey: String? = null,
     /** Average customer rating; 0 until real reviews exist. */
     val rating: Float = 0f,
     val reviewsCount: Int = 0,

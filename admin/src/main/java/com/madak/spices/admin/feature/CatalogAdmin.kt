@@ -1,6 +1,8 @@
 package com.madak.spices.admin.feature
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +58,8 @@ import com.madak.spices.data.local.entity.CustomerRow
 import com.madak.spices.data.local.entity.InventoryRow
 import com.madak.spices.data.local.entity.ProductEntity
 import com.madak.spices.data.model.Product
+import com.madak.spices.data.model.ProductPhotos
+import com.madak.spices.designsystem.component.SpicePhotos
 import com.madak.spices.data.repository.AdminRepository
 import com.madak.spices.designsystem.component.MadakChip
 import com.madak.spices.designsystem.component.ProductImage
@@ -114,7 +118,7 @@ fun ProductsAdminScreen(viewModel: CatalogAdminViewModel = hiltViewModel()) {
             items(products, key = { it.id }) { p ->
                 AdminCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        ProductImage(p.entity.imageUrl, p.entity.colorArgb, p.id, Modifier.size(56.dp).clip(RoundedCornerShape(14.dp)))
+                        ProductImage(p.entity.imageUrl, p.entity.colorArgb, p.id, Modifier.size(56.dp).clip(RoundedCornerShape(14.dp)), photoKey = p.photoKey)
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             Text(p.entity.nameAr, style = MaterialTheme.typography.titleSmall)
@@ -156,7 +160,11 @@ private fun ProductEditor(product: Product?, categories: List<CategoryEntity>, o
     var stock by remember { mutableStateOf("50") }
     var featured by remember { mutableStateOf(e?.isFeatured ?: false) }
     var best by remember { mutableStateOf(e?.isBestSeller ?: false) }
-    val valid = nameAr.isNotBlank() && (per100.toIntOrNull() ?: 0) > 0 && category.isNotBlank()
+    var photoKey by remember { mutableStateOf(e?.photoKey) }
+    var imageUrl by remember { mutableStateOf(e?.imageUrl.orEmpty()) }
+    val urlValid = imageUrl.isBlank() || imageUrl.trim().startsWith("https://")
+    val valid = nameAr.isNotBlank() && (per100.toIntOrNull() ?: 0) > 0 && category.isNotBlank() && urlValid
+    val autoKey = ProductPhotos.keyFor(nameAr, nameFr, "")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -177,6 +185,40 @@ private fun ProductEditor(product: Product?, categories: List<CategoryEntity>, o
                 Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(featured, { featured = it }); Text("مختارات مذاق") }
                 Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(best, { best = it }); Text("الأكثر مبيعاً") }
                 Text("تُحسب أسعار 50/250/500 غ تلقائياً من سعر 100 غ.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("الصورة", style = MaterialTheme.typography.labelLarge)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    ProductImage(imageUrl.trim().ifBlank { null }, 0xFF9C6B30L, nameAr, Modifier.size(84.dp).clip(RoundedCornerShape(16.dp)), photoKey = photoKey ?: autoKey)
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        when {
+                            imageUrl.isNotBlank() -> "صورة من الرابط"
+                            photoKey != null -> "صورة مختارة: " + (ProductPhotos.entry(photoKey)?.labelAr ?: "")
+                            autoKey != null -> "تلقائية حسب الاسم: " + (ProductPhotos.entry(autoKey)?.labelAr ?: "")
+                            else -> "لا توجد صورة مطابقة — اختر صورة أو ضع رابطاً"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    item { MadakChip("تلقائي", photoKey == null, { photoKey = null }) }
+                    items(ProductPhotos.all.filter { SpicePhotos.drawableFor(it.key) != null }) { entry ->
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(64.dp)) {
+                            ProductImage(
+                                null, 0xFF9C6B30L, entry.key,
+                                Modifier.size(56.dp).clip(RoundedCornerShape(12.dp))
+                                    .border(3.dp, if (photoKey == entry.key) MadakColors.Magenta else Color.Transparent, RoundedCornerShape(12.dp))
+                                    .clickable { photoKey = entry.key },
+                                photoKey = entry.key,
+                            )
+                            Text(entry.labelAr, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+                        }
+                    }
+                }
+                OutlinedTextField(
+                    imageUrl, { imageUrl = it }, label = { Text("رابط صورة من الإنترنت (اختياري)") }, singleLine = true,
+                    isError = !urlValid, supportingText = { Text(if (urlValid) "يتطلب اتصالاً بالإنترنت؛ تبقى الصورة المختارة احتياطياً" else "يجب أن يبدأ الرابط بـ https://") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                )
             }
         },
         confirmButton = {
@@ -187,6 +229,7 @@ private fun ProductEditor(product: Product?, categories: List<CategoryEntity>, o
                 )).copy(
                     categoryId = category, nameAr = nameAr.trim(), nameFr = nameFr.trim(), descriptionAr = descAr.trim(),
                     isFeatured = featured, isBestSeller = best, tags = listOf(nameAr, nameFr).joinToString(","),
+                    photoKey = photoKey, imageUrl = imageUrl.trim().ifBlank { null },
                 )
                 onSave(entity, per100.toInt(), stock.toIntOrNull() ?: 0)
             }) { Text("حفظ") }

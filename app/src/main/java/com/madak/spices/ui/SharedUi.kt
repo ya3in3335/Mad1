@@ -151,7 +151,7 @@ fun ProductCard(
     ) {
         Column {
             Box(Modifier.fillMaxWidth().aspectRatio(1f)) {
-                ProductImage(product.entity.imageUrl, product.entity.colorArgb, product.id, Modifier.matchParentSize().clip(RoundedCornerShape(24.dp)))
+                ProductImage(product.entity.imageUrl, product.entity.colorArgb, product.id, Modifier.matchParentSize().clip(RoundedCornerShape(24.dp)), photoKey = product.photoKey)
                 FavoriteButton(product.isFavorite, onToggleFavorite, Modifier.align(Alignment.TopEnd).padding(10.dp))
                 if (product.entity.reviewsCount > 0) RatingBadge(product.entity.rating, Modifier.align(Alignment.BottomStart).padding(10.dp))
             }

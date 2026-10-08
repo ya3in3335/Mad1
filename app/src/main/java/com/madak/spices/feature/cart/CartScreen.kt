@@ -192,6 +192,7 @@ private fun CartLineCard(
             ProductImage(
                 line.product.entity.imageUrl, line.product.entity.colorArgb, line.product.id,
                 Modifier.size(86.dp).clip(RoundedCornerShape(18.dp)).bounceClick(onClick = onClick),
+                photoKey = line.product.photoKey,
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {

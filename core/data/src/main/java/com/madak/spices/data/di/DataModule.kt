@@ -46,7 +46,7 @@ object DataModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): MadakDatabase =
         Room.databaseBuilder(context, MadakDatabase::class.java, MadakDatabase.NAME)
-            .fallbackToDestructiveMigration(dropAllTables = true)
+            .addMigrations(MadakDatabase.MIGRATION_1_2)
             .build()
 
     @Provides fun catalogDao(db: MadakDatabase): CatalogDao = db.catalogDao()

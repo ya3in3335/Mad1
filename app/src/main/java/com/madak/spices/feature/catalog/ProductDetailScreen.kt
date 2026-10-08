@@ -124,6 +124,7 @@ fun ProductDetailScreen(onBack: () -> Unit, onDish: (Dish) -> Unit, viewModel: P
                         val s = 1f + (scroll.value / 3000f)
                         scaleX = s; scaleY = s
                     },
+                    photoKey = p.photoKey,
                 )
             }
             Column(

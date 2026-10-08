@@ -168,7 +168,7 @@ fun CookTodayScreen(onBack: () -> Unit, onProduct: (String) -> Unit, viewModel: 
                 items(products, key = { it.id }) { p ->
                     Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.surface, modifier = Modifier.animateItem().bounceClick { onProduct(p.id) }) {
                         Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                            ProductImage(p.entity.imageUrl, p.entity.colorArgb, p.id, Modifier.size(72.dp).clip(RoundedCornerShape(18.dp)))
+                            ProductImage(p.entity.imageUrl, p.entity.colorArgb, p.id, Modifier.size(72.dp).clip(RoundedCornerShape(18.dp)), photoKey = p.photoKey)
                             Spacer(Modifier.width(14.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(p.name(language), style = MaterialTheme.typography.titleMedium)
