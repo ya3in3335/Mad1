@@ -80,6 +80,9 @@ object Launcher {
     fun whatsapp(context: Context, message: String = "") =
         open(context, Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.whatsappUrl(message))))
 
+    fun web(context: Context, url: String) =
+        open(context, Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
     fun tiktok(context: Context) =
         open(context, Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.tiktokUrl)))
 

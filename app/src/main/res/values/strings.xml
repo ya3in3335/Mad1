@@ -179,4 +179,6 @@
     <string name="catalog_empty_body">سيتم إضافة منتجات مذاق قريباً. عد لاحقاً لاكتشاف توابلنا.</string>
     <string name="cook_empty">لا توجد منتجات مناسبة لهذا الطبق حالياً.</string>
     <string name="action_tiktok">تيك توك</string>
+    <string name="about_photo_credits">حقوق صور المنتجات</string>
+    <string name="about_photo_credits_body">صور حقيقية من Flickr بتراخيص المشاع الإبداعي (CC BY / CC BY-SA). اضغط على أي صورة لفتح مصدرها.</string>
 </resources>

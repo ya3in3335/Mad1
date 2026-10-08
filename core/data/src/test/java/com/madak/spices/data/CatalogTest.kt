@@ -24,6 +24,18 @@ class CatalogTest {
     }
 
     @Test
+    fun `product names map to the right bundled photo`() {
+        val photos = com.madak.spices.data.model.ProductPhotos
+        assertEquals("cumin", photos.keyFor("كمون", "", ""))
+        assertEquals("nigella", photos.keyFor("حبة البركة", "", ""))
+        assertEquals("ras_el_hanout", photos.keyFor("رأس الحانوت", "", ""))
+        assertEquals("chili", photos.keyFor("", "Piment fort", ""))
+        assertEquals("spice_mix", photos.keyFor("خلطة الدجاج", "Mélange volaille", ""))
+        assertNull(photos.keyFor("سكر", "Sucre", ""))
+        assertEquals(photos.all.size, photos.all.map { it.key }.toSet().size)
+    }
+
+    @Test
     fun `store phone is formatted for display`() {
         assertEquals("+213 664 71 70 29", com.madak.spices.data.model.StoreInfo.phonePretty)
         assertEquals("https://wa.me/213664717029", com.madak.spices.data.model.StoreInfo.whatsappUrl())

@@ -24,7 +24,6 @@ object ProductPhotos {
         Entry("cloves", "قرنفل", listOf("قرنفل", "عود النوار", "clou de girofle", "girofle", "cloves")),
         Entry("cardamom", "هيل", listOf("هيل", "حب الهال", "cardamome", "cardamom")),
         Entry("star_anise", "يانسون نجمي", listOf("يانسون نجمي", "badiane", "anis étoilé", "star anise")),
-        Entry("anise", "يانسون", listOf("يانسون", "حبة حلاوة", "anis", "anise")),
         Entry("fenugreek", "حلبة", listOf("حلبة", "fenugrec", "fenugreek")),
         Entry("sesame", "سمسم", listOf("سمسم", "جلجلان", "sésame", "sesame")),
         Entry("nutmeg", "جوزة الطيب", listOf("جوزة الطيب", "noix de muscade", "muscade", "nutmeg")),

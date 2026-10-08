@@ -115,7 +115,7 @@ These screens were rendered on the JVM by the automated UI smoke tests (`AppSmok
 | DI | Hilt (KSP) |
 | Persistence | Room 2.7 (KSP), DataStore Preferences |
 | Network | Retrofit 2 + OkHttp + Gson (optional backend) |
-| Images | Coil (remote product images when provided; offline illustration otherwise) |
+| Images | Real product photos bundled offline (matched by product name, CC BY/BY-SA, see `docs/brand/PHOTO_CREDITS.md`) + Coil for image URLs |
 | Tests | JUnit 4, Robolectric + Compose UI test (end-to-end smoke tests on the JVM) |
 | SDK | `minSdk 24`, `compileSdk/targetSdk 36` |
 | Font | Tajawal (SIL OFL, `docs/brand/Tajawal-OFL.txt`) |

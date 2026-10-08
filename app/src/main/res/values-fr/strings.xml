@@ -179,4 +179,6 @@
     <string name="catalog_empty_body">Les produits Madak arrivent bientôt. Revenez découvrir nos épices.</string>
     <string name="cook_empty">Aucun produit adapté à ce plat pour le moment.</string>
     <string name="action_tiktok">TikTok</string>
+    <string name="about_photo_credits">Crédits photos</string>
+    <string name="about_photo_credits_body">Photos réelles issues de Flickr sous licences Creative Commons (CC BY / CC BY-SA). Touchez une ligne pour ouvrir la source.</string>
 </resources>

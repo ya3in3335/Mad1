@@ -2,6 +2,7 @@ package com.madak.spices.feature.profile
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,6 +95,7 @@ import com.madak.spices.designsystem.component.LogoPart
 import com.madak.spices.designsystem.component.MadakChip
 import com.madak.spices.designsystem.component.MadakLogo
 import com.madak.spices.designsystem.component.MadakWordmark
+import com.madak.spices.designsystem.component.PhotoCredits
 import com.madak.spices.designsystem.component.bounceClick
 import com.madak.spices.designsystem.theme.MadakColors
 import com.madak.spices.ui.Launcher
@@ -345,6 +347,19 @@ fun AboutScreen(onBack: () -> Unit) {
                 }
             }
             Spacer(Modifier.height(24.dp))
+            Text(stringResource(R.string.about_photo_credits), style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.about_photo_credits_body), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(Modifier.height(6.dp))
+            val context = LocalContext.current
+            PhotoCredits.all.forEach { c ->
+                Text(
+                    "\u2066${c.title} — ${c.author} (${c.license})\u2069",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth().clickable { Launcher.web(context, c.url) }.padding(vertical = 3.dp),
+                )
+            }
+            Spacer(Modifier.height(16.dp))
             Text(stringResource(R.string.about_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(24.dp))
         }
