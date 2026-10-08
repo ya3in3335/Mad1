@@ -90,7 +90,7 @@ private class Glyph(val ds: DrawScope, val o: Offset, val s: Float, val ink: Col
                 // Wall bracket stays still; the camera pans gently around its mount.
                 fill(Path().apply {
                     val a = c(778f, 445f); val b = c(806f, 592f)
-                    addRoundRect(RoundRect(Rect(p(a.first, a.second), p(b.first, b.second)), topLeftCornerRadius = CornerRadius(0.05f * s), bottomLeftCornerRadius = CornerRadius(0.05f * s)))
+                    addRoundRect(RoundRect(Rect(p(a.first, a.second), p(b.first, b.second)), topLeft = CornerRadius(0.05f * s), bottomLeft = CornerRadius(0.05f * s)))
                 })
                 val pivot = c(778f, 520f)
                 rotate(-3f + 6f * wave(t), pivot = p(pivot.first, pivot.second)) {
