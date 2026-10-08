@@ -90,8 +90,8 @@ These screens were rendered on the JVM by the automated UI smoke tests (`AppSmok
 - Order confirmation (animated), orders list, **order tracking timeline**
   (NEW → CONFIRMED → PREPARING → OUT_FOR_DELIVERY → DELIVERED / CANCELLED); cancel while NEW
 - In-app notifications center + Android system notifications
-- Profile, language switch **العربية / Français**, About Madak, store location, contact (WhatsApp, phone,
-  Instagram, e-mail)
+- Profile, language switch **العربية / Français**, About Madak, store location, contact (TikTok, and
+  WhatsApp/phone/Instagram/e-mail once configured)
 - Animations: fade/scale/slide navigation, animated cart badge, bounce clicks, haptic feedback
 - Fully **offline**: Room is the single source of truth, and network failures never crash the app
 
@@ -266,10 +266,13 @@ already exists); Firebase Storage for images. Add `google-services.json` locally
 
 ## Store configuration checklist
 
-Edit `core/data/src/main/java/com/madak/spices/data/model/StoreInfo.kt` with the real details:
-phone, WhatsApp number, Instagram handle, e-mail, address, opening hours and GPS coordinates
-(**the current values are placeholders**). Delivery fees and the free-delivery threshold are in
-`Pricing.kt`.
+Store details live in `core/data/src/main/java/com/madak/spices/data/model/StoreInfo.kt`.
+Current values come from the official TikTok account [@madak.spices](https://www.tiktok.com/@madak.spices)
+(*Madak Spices-مذاق للتوابل*): TikTok link, slogan, and location near the M Suite hotel in Dar El Beïda, Algiers.
+
+Phone, WhatsApp, Instagram, e-mail and opening hours are **not published** there, so they are left empty
+and their buttons are hidden. Fill them in to make the WhatsApp/call buttons appear automatically.
+Delivery fees and the free-delivery threshold are in `Pricing.kt`.
 
 ---
 

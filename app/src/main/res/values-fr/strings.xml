@@ -178,4 +178,5 @@
     <string name="catalog_empty_title">Boutique en préparation</string>
     <string name="catalog_empty_body">Les produits Madak arrivent bientôt. Revenez découvrir nos épices.</string>
     <string name="cook_empty">Aucun produit adapté à ce plat pour le moment.</string>
+    <string name="action_tiktok">TikTok</string>
 </resources>

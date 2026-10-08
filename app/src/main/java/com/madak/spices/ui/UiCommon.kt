@@ -74,11 +74,14 @@ object Launcher {
         }
     }
 
-    fun call(context: Context, phone: String = StoreInfo.PHONE) =
+    fun call(context: Context, phone: String = StoreInfo.phoneDisplay) =
         open(context, Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")))
 
     fun whatsapp(context: Context, message: String = "") =
         open(context, Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.whatsappUrl(message))))
+
+    fun tiktok(context: Context) =
+        open(context, Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.tiktokUrl)))
 
     fun instagram(context: Context) =
         open(context, Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.instagramUrl)))
@@ -89,6 +92,6 @@ object Launcher {
     fun maps(context: Context) {
         val geo = Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.mapsUri))
         if (geo.resolveActivity(context.packageManager) != null) open(context, geo)
-        else open(context, Intent(Intent.ACTION_VIEW, Uri.parse("https://maps.google.com/?q=${StoreInfo.LATITUDE},${StoreInfo.LONGITUDE}")))
+        else open(context, Intent(Intent.ACTION_VIEW, Uri.parse(StoreInfo.mapsWebUrl)))
     }
 }

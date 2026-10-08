@@ -61,6 +61,7 @@ import com.madak.spices.BuildConfig
 import com.madak.spices.R
 import com.madak.spices.data.local.entity.OrderWithItems
 import com.madak.spices.data.model.OrderStatus
+import com.madak.spices.data.model.StoreInfo
 import com.madak.spices.data.model.wilayaLabel
 import com.madak.spices.data.repository.OrderRepository
 import com.madak.spices.designsystem.component.EmptyState
@@ -265,13 +266,17 @@ fun OrderTrackingScreen(onBack: () -> Unit, viewModel: OrderDetailViewModel = hi
                     }
                 }
             }
-            item {
+            if (StoreInfo.hasWhatsapp || StoreInfo.hasPhone) item {
                 Surface(shape = RoundedCornerShape(22.dp), color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)) {
                     Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Rounded.SupportAgent, null, tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(10.dp))
                         Text(stringResource(R.string.tracking_need_help), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-                        TextButton(onClick = { Launcher.whatsapp(context, o.order.orderNumber) }) { Text(stringResource(R.string.action_whatsapp)) }
+                        if (StoreInfo.hasWhatsapp) {
+                            TextButton(onClick = { Launcher.whatsapp(context, o.order.orderNumber) }) { Text(stringResource(R.string.action_whatsapp)) }
+                        } else {
+                            TextButton(onClick = { Launcher.call(context) }) { Text(stringResource(R.string.action_call)) }
+                        }
                     }
                 }
             }

@@ -153,5 +153,15 @@ class AppSmokeTest {
         compose.onAllNodesWithText("حسابي").onFirst().performClick()
         waitForText("أمينة بن علي")
         settle(800); shot("16_profile")
+
+        // Contact & store location (real details from the official TikTok account)
+        compose.onNodeWithText("تواصل معنا").performScrollTo().performClick()
+        waitForText("\u2066@madak.spices\u2069")
+        settle(800); shot("17_contact")
+        compose.activityRule.scenario.onActivity { it.onBackPressedDispatcher.onBackPressed() }
+        settle(600)
+        compose.onNodeWithText("موقع المتجر").performScrollTo().performClick()
+        waitForText("فتح في الخرائط")
+        settle(800); shot("18_store")
     }
 }

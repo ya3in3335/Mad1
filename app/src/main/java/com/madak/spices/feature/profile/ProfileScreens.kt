@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LocalOffer
 import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.PhotoCamera
@@ -375,7 +376,9 @@ fun StoreLocationScreen(onBack: () -> Unit) {
         }
         Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             InfoCard(Icons.Rounded.Place, stringResource(R.string.store_address), language.pick(StoreInfo.ADDRESS_AR, StoreInfo.ADDRESS_FR))
-            InfoCard(Icons.Rounded.AccessTime, stringResource(R.string.store_hours), language.pick(StoreInfo.OPENING_HOURS_AR, StoreInfo.OPENING_HOURS_FR))
+            if (StoreInfo.hasOpeningHours) {
+                InfoCard(Icons.Rounded.AccessTime, stringResource(R.string.store_hours), language.pick(StoreInfo.OPENING_HOURS_AR, StoreInfo.OPENING_HOURS_FR))
+            }
             Button(onClick = { Launcher.maps(context) }, shape = RoundedCornerShape(50), modifier = Modifier.fillMaxWidth().height(54.dp)) {
                 Icon(Icons.Rounded.Map, null)
                 Spacer(Modifier.width(8.dp))
@@ -403,6 +406,7 @@ private fun InfoCard(icon: ImageVector, title: String, body: String, onClick: ((
 @Composable
 fun ContactScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val language = LocalAppLanguage.current
     val whatsappMessage = stringResource(R.string.contact_whatsapp_message)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         MadakTopBar(stringResource(R.string.contact_title), onBack)
@@ -412,13 +416,27 @@ fun ContactScreen(onBack: () -> Unit) {
         ) {
             MadakWordmark(Modifier.height(60.dp))
             Spacer(Modifier.height(10.dp))
+            Text(language.pick(StoreInfo.SLOGAN_AR, StoreInfo.SLOGAN_FR), color = MadakColors.Gold, style = MaterialTheme.typography.titleSmall)
             Text(stringResource(R.string.contact_subtitle), color = MadakColors.Beige, style = MaterialTheme.typography.bodyMedium)
         }
         Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ContactButton(Icons.Rounded.Chat, stringResource(R.string.action_whatsapp), "+${StoreInfo.WHATSAPP}", Color(0xFF25D366)) { Launcher.whatsapp(context, whatsappMessage) }
-            ContactButton(Icons.Rounded.Call, stringResource(R.string.action_call), StoreInfo.PHONE, MadakColors.Info) { Launcher.call(context) }
-            ContactButton(Icons.Rounded.PhotoCamera, stringResource(R.string.action_instagram), "@${StoreInfo.INSTAGRAM_HANDLE}", MadakColors.Magenta) { Launcher.instagram(context) }
-            ContactButton(Icons.Rounded.Email, stringResource(R.string.contact_email), StoreInfo.EMAIL, MadakColors.Cinnamon) { Launcher.email(context) }
+            // Only channels with real, published details are shown.
+            if (StoreInfo.hasWhatsapp) {
+                ContactButton(Icons.Rounded.Chat, stringResource(R.string.action_whatsapp), "\u2066+${StoreInfo.WHATSAPP}\u2069", Color(0xFF25D366)) { Launcher.whatsapp(context, whatsappMessage) }
+            }
+            if (StoreInfo.hasPhone) {
+                ContactButton(Icons.Rounded.Call, stringResource(R.string.action_call), StoreInfo.phoneDisplay, MadakColors.Info) { Launcher.call(context) }
+            }
+            if (StoreInfo.hasTiktok) {
+                ContactButton(Icons.Rounded.MusicNote, stringResource(R.string.action_tiktok), "\u2066@${StoreInfo.TIKTOK_HANDLE}\u2069", MadakColors.Ink) { Launcher.tiktok(context) }
+            }
+            if (StoreInfo.hasInstagram) {
+                ContactButton(Icons.Rounded.PhotoCamera, stringResource(R.string.action_instagram), "\u2066@${StoreInfo.INSTAGRAM_HANDLE}\u2069", MadakColors.Magenta) { Launcher.instagram(context) }
+            }
+            if (StoreInfo.hasEmail) {
+                ContactButton(Icons.Rounded.Email, stringResource(R.string.contact_email), StoreInfo.EMAIL, MadakColors.Cinnamon) { Launcher.email(context) }
+            }
+            ContactButton(Icons.Rounded.Place, stringResource(R.string.profile_store), language.pick(StoreInfo.ADDRESS_AR, StoreInfo.ADDRESS_FR), MadakColors.Gold) { Launcher.maps(context) }
             Spacer(Modifier.height(20.dp))
         }
     }

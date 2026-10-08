@@ -178,4 +178,5 @@
     <string name="catalog_empty_title">المتجر قيد التجهيز</string>
     <string name="catalog_empty_body">سيتم إضافة منتجات مذاق قريباً. عد لاحقاً لاكتشاف توابلنا.</string>
     <string name="cook_empty">لا توجد منتجات مناسبة لهذا الطبق حالياً.</string>
+    <string name="action_tiktok">تيك توك</string>
 </resources>
