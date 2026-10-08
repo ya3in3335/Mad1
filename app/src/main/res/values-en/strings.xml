@@ -9,7 +9,7 @@
     <string name="see_all">See all</string>
     <string name="hero_kicker">Smart security solutions</string>
     <string name="hero_title">Protect what matters with professional technology</string>
-    <string name="hero_body">Surveillance, alarms, access control, installation and maintenance — in Oran and surroundings.</string>
+    <string name="hero_body">Surveillance, alarms, access control, installation and maintenance — YOURTECH SYSTEME, Bir El Djir, Oran.</string>
     <string name="open_now">Open now • closes %1$s</string>
     <string name="closed_now">Closed • opens %1$s %2$s</string>
     <string name="today">today</string>
@@ -24,10 +24,6 @@
     <string name="section_testimonials">Customer reviews</string>
     <string name="section_projects">Completed projects</string>
     <string name="section_visit">Visit us</string>
-    <string name="why_title">Why YOURTECH?</string>
-    <string name="why_1">Needs assessment</string>
-    <string name="why_2">Clean professional installation</string>
-    <string name="why_3">Follow-up &amp; maintenance</string>
     <string name="solution_benefits">Benefits</string>
     <string name="solution_use_cases">Suitable for</string>
     <string name="solution_specs">Technical specifications</string>

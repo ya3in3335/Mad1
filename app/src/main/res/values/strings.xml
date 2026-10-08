@@ -10,7 +10,7 @@
     <string name="see_all">عرض الكل</string>
     <string name="hero_kicker">حلول أمنية ذكية</string>
     <string name="hero_title">احمِ ما يهمّك بتقنية احترافية</string>
-    <string name="hero_body">مراقبة، إنذار، تحكم في الدخول، تركيب وصيانة — في وهران وما حولها.</string>
+    <string name="hero_body">مراقبة، إنذار، تحكم في الدخول، تركيب وصيانة — YOURTECH SYSTEME، بئر الجير، وهران.</string>
     <string name="open_now">مفتوح الآن • يغلق %1$s</string>
     <string name="closed_now">مغلق الآن • يفتح %1$s %2$s</string>
     <string name="today">اليوم</string>
@@ -25,10 +25,6 @@
     <string name="section_testimonials">آراء العملاء</string>
     <string name="section_projects">مشاريع منجزة</string>
     <string name="section_visit">زورونا</string>
-    <string name="why_title">لماذا YOURTECH؟</string>
-    <string name="why_1">دراسة مجانية لاحتياجك</string>
-    <string name="why_2">تركيب احترافي ونظيف</string>
-    <string name="why_3">متابعة وصيانة بعد البيع</string>
     <string name="solution_benefits">المزايا</string>
     <string name="solution_use_cases">مناسب لـ</string>
     <string name="solution_specs">المواصفات التقنية</string>

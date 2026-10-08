@@ -9,7 +9,7 @@
     <string name="see_all">Voir tout</string>
     <string name="hero_kicker">Solutions de sécurité intelligentes</string>
     <string name="hero_title">Protégez ce qui compte avec une technologie professionnelle</string>
-    <string name="hero_body">Vidéosurveillance, alarme, contrôle d\'accès, installation et maintenance — à Oran et environs.</string>
+    <string name="hero_body">Vidéosurveillance, alarme, contrôle d\'accès, installation et maintenance — YOURTECH SYSTEME, Bir El Djir, Oran.</string>
     <string name="open_now">Ouvert • ferme à %1$s</string>
     <string name="closed_now">Fermé • ouvre %1$s à %2$s</string>
     <string name="today">aujourd\'hui</string>
@@ -24,10 +24,6 @@
     <string name="section_testimonials">Avis clients</string>
     <string name="section_projects">Réalisations</string>
     <string name="section_visit">Nous rendre visite</string>
-    <string name="why_title">Pourquoi YOURTECH ?</string>
-    <string name="why_1">Étude de vos besoins</string>
-    <string name="why_2">Installation soignée</string>
-    <string name="why_3">Suivi et maintenance</string>
     <string name="solution_benefits">Avantages</string>
     <string name="solution_use_cases">Adapté pour</string>
     <string name="solution_specs">Caractéristiques techniques</string>

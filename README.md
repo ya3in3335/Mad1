@@ -17,7 +17,6 @@ Kotlin · Jetpack Compose · Material 3 · MVVM · Hilt · Room · Retrofit · C
 ## Contents
 
 1. [Overview](#overview)
-2. [Screenshots](#screenshots)
 3. [Features](#features)
 4. [Content and verification rules](#content-and-verification-rules)
 5. [Tech stack](#tech-stack)
@@ -45,22 +44,6 @@ Both apps share the data layer (`:core:data`) and the design system (`:core:desi
 - Address: YOURTECH SYSTEME, Bir El Djir, Oran, Algeria. GPS: 35.7190252, -0.5664739.
 - Phone / WhatsApp: +213 561 03 41 49.
 - Hours: Saturday–Thursday 08:00–17:30. Closed Friday.
-
-## Screenshots
-
-These screens were rendered on the JVM by the automated UI tests (`AppSmokeTest`, `AdminSmokeTest`).
-
-| Splash | Home | Solutions | CCTV solution |
-|---|---|---|---|
-| <img src="docs/screenshots/c01_splash.png" width="180"/> | <img src="docs/screenshots/c02_home.png" width="180"/> | <img src="docs/screenshots/c03_solutions.png" width="180"/> | <img src="docs/screenshots/c04_solution_cctv.png" width="180"/> |
-
-| Installation request | Request sent | Tracking | Contact |
-|---|---|---|---|
-| <img src="docs/screenshots/c07_request_form.png" width="180"/> | <img src="docs/screenshots/c08_request_sent.png" width="180"/> | <img src="docs/screenshots/c09_request_tracking.png" width="180"/> | <img src="docs/screenshots/c11_contact.png" width="180"/> |
-
-| Admin: owner setup | Dashboard | Services (confirm) | Product editor |
-|---|---|---|---|
-| <img src="docs/screenshots/a02_owner_setup.png" width="180"/> | <img src="docs/screenshots/a03_dashboard.png" width="180"/> | <img src="docs/screenshots/a04_services.png" width="180"/> | <img src="docs/screenshots/a05_product_editor.png" width="180"/> |
 
 ## Features
 
@@ -141,7 +124,7 @@ The apps follow the brief's rules. **Nothing has been invented.**
 | Storage | Room 2.7 (single schema shared by both apps) |
 | Network (ready) | Retrofit 2.11 + Gson (`YourTechApi`) |
 | Images | Coil 2.7; Photo Picker plus re-encoding through `ImageImporter` |
-| Tests | JUnit 4, Robolectric 4.16, Compose UI test |
+| Tests | JUnit 4 (data-layer and password-hashing unit tests) |
 
 minSdk 24 · target/compile SDK 36.
 
@@ -168,21 +151,18 @@ docs/brand/              Original logo, launcher icons, font licence
 
 ```bash
 # Android Studio Ladybug+ or command line with JDK 17 and Android SDK 36
-./gradlew testDebugUnitTest     # unit tests + Robolectric UI smoke tests (writes screenshots)
+./gradlew testDebugUnitTest     # unit tests (optional)
 ./gradlew assembleDebug         # app/build/outputs/apk/debug/yourtech-systeme-debug.apk
                                 # admin/build/outputs/apk/debug/yourtech-admin-debug.apk
 ```
-
-Screenshots from the smoke tests go to `*/build/outputs/screenshots/`.
 
 ## GitHub Actions and downloading the APKs
 
 `.github/workflows/android.yml` runs on every push and pull request:
 
 1. JDK 17, Android SDK 36, Gradle cache.
-2. `testDebugUnitTest` (unit and UI smoke tests).
-3. `assembleDebug`.
-4. Uploads the artifacts **`yourtech-systeme-debug-apk`**, **`yourtech-admin-debug-apk`** and `test-reports` (reports and screenshots).
+2. `assembleDebug` (builds both apps).
+3. Uploads the artifacts **`yourtech-systeme-debug-apk`** and **`yourtech-admin-debug-apk`**.
 
 **Download:** GitHub → *Actions* → latest green run → *Artifacts* → download the zip → install the APK. On the phone, allow "install unknown apps".
 

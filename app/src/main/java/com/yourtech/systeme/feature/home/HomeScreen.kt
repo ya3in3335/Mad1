@@ -210,7 +210,6 @@ fun HomeScreen(
                 }
             }
         }
-        item { WhyCard() }
         if (s.projects.isNotEmpty()) {
             item { SectionHeader(stringResource(R.string.section_projects), action = stringResource(R.string.see_all), onAction = onPortfolio) }
             item {
@@ -299,20 +298,6 @@ private fun QuickAction(icon: ImageVector, label: String, tint: Color, modifier:
     }
 }
 
-@Composable
-private fun WhyCard() {
-    GlassCard(Modifier.padding(20.dp).fillMaxWidth()) {
-        Text(stringResource(R.string.why_title), style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(10.dp))
-        listOf(R.string.why_1 to "shield", R.string.why_2 to "tools", R.string.why_3 to "recorder").forEach { (txt, key) ->
-            Row(Modifier.padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                SecurityIllustration(key, Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)), animated = false)
-                Spacer(Modifier.width(12.dp))
-                Text(stringResource(txt), style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-    }
-}
 
 @Composable
 fun VisitCard(info: BusinessInfoEntity, onContact: () -> Unit) {
