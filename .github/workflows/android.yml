@@ -31,6 +31,9 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The legacy "tools" package (installed by default) no longer exists in current SDK repos.
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
 
       - name: Set up Gradle (with dependency & build cache)
         uses: gradle/actions/setup-gradle@v4
@@ -92,6 +95,8 @@ jobs:
 
       - uses: android-actions/setup-android@v3
         if: env.HAS_KEYSTORE == 'true'
+        with:
+          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
 
       - uses: gradle/actions/setup-gradle@v4
         if: env.HAS_KEYSTORE == 'true'
