@@ -312,7 +312,7 @@ fun MapPreview(modifier: Modifier) {
     Box(modifier) {
         Image(painterResource(R.drawable.store_map), null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         Box(Modifier.fillMaxSize().background(YT.Navy.copy(alpha = 0.18f)))
-        SecurityIllustration("pin", Modifier.align(Alignment.Center).size(64.dp), background = false)
+        SecurityIllustration("pin", Modifier.align(Alignment.Center).size(64.dp), background = false, tint = YT.Blue)
         Box(Modifier.align(Alignment.Center).size(18.dp).clip(CircleShape).background(YT.Blue))
         Box(Modifier.align(Alignment.Center).size(8.dp).clip(CircleShape).background(Color.White))
         Text(
