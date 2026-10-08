@@ -4,7 +4,19 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- Back-office data must not leave the device through cloud backups. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <package android:name="com.whatsapp" />
+        <package android:name="com.whatsapp.w4b" />
+    </queries>
+
+    <!-- Back-office data (accounts, customer requests, audit log) never leaves the device through backups. -->
     <application
         android:name=".AdminApplication"
         android:allowBackup="false"
@@ -14,7 +26,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Madak.Starting">
+        android:theme="@style/Theme.YourTech.Starting">
         <activity
             android:name=".AdminActivity"
             android:exported="true"

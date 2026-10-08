@@ -8,7 +8,7 @@ plugins {
 
 // Release signing is configured ONLY when all signing values are provided through
 // environment variables (GitHub Secrets in CI). Nothing secret lives in the repository.
-val releaseKeystorePath: String? = System.getenv("MADAK_KEYSTORE_PATH")
+val releaseKeystorePath: String? = System.getenv("YT_KEYSTORE_PATH")
 val releaseKeystorePassword: String? = System.getenv("KEYSTORE_PASSWORD")
 val releaseKeyAlias: String? = System.getenv("KEY_ALIAS")
 val releaseKeyPassword: String? = System.getenv("KEY_PASSWORD")
@@ -16,11 +16,11 @@ val hasReleaseSigning = listOf(releaseKeystorePath, releaseKeystorePassword, rel
     .all { !it.isNullOrBlank() } && file(releaseKeystorePath!!).exists()
 
 android {
-    namespace = "com.madak.spices"
+    namespace = "com.yourtech.systeme"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.madak.spices"
+        applicationId = "com.yourtech.systeme"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -67,9 +67,9 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             all {
-                it.systemProperty("madak.screenshots.dir", layout.buildDirectory.dir("outputs/screenshots").get().asFile.absolutePath)
-                // Marketing screenshots (sample catalogue) only run on demand: ./gradlew :app:testDebugUnitTest -PmadakAd=true
-                it.systemProperty("madak.ad", (project.findProperty("madakAd") ?: "false").toString())
+                it.systemProperty("yt.screenshots.dir", layout.buildDirectory.dir("outputs/screenshots").get().asFile.absolutePath)
+                // Marketing screenshots (sample catalogue) only run on demand: ./gradlew :app:testDebugUnitTest -PytMarketing=true
+                it.systemProperty("yt.marketing", (project.findProperty("ytMarketing") ?: "false").toString())
             }
         }
     }
@@ -79,7 +79,7 @@ android {
     }
 }
 
-base { archivesName.set("madak-spices") }
+base { archivesName.set("yourtech-systeme") }
 
 kotlin {
     compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }

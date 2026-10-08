@@ -50,14 +50,14 @@ jobs:
       - name: Upload customer app APK
         uses: actions/upload-artifact@v4
         with:
-          name: madak-spices-debug-apk
+          name: yourtech-systeme-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
       - name: Upload admin app APK
         uses: actions/upload-artifact@v4
         with:
-          name: madak-admin-debug-apk
+          name: yourtech-admin-debug-apk
           path: admin/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
@@ -106,8 +106,8 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/madak-release.jks"
-          echo "MADAK_KEYSTORE_PATH=$RUNNER_TEMP/madak-release.jks" >> "$GITHUB_ENV"
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/yourtech-release.jks"
+          echo "YT_KEYSTORE_PATH=$RUNNER_TEMP/yourtech-release.jks" >> "$GITHUB_ENV"
 
       - name: Assemble signed release APKs
         if: env.HAS_KEYSTORE == 'true'
@@ -121,13 +121,13 @@ jobs:
 
       - name: Remove decoded keystore
         if: always() && env.HAS_KEYSTORE == 'true'
-        run: rm -f "$RUNNER_TEMP/madak-release.jks"
+        run: rm -f "$RUNNER_TEMP/yourtech-release.jks"
 
       - name: Upload release APKs
         if: env.HAS_KEYSTORE == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: madak-release-apks
+          name: yourtech-release-apks
           path: |
             app/build/outputs/apk/release/*.apk
             admin/build/outputs/apk/release/*.apk

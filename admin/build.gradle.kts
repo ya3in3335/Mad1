@@ -8,7 +8,7 @@ plugins {
 
 // Release signing is configured ONLY when all signing values are provided through
 // environment variables (GitHub Secrets in CI). Nothing secret lives in the repository.
-val releaseKeystorePath: String? = System.getenv("MADAK_KEYSTORE_PATH")
+val releaseKeystorePath: String? = System.getenv("YT_KEYSTORE_PATH")
 val releaseKeystorePassword: String? = System.getenv("KEYSTORE_PASSWORD")
 val releaseKeyAlias: String? = System.getenv("KEY_ALIAS")
 val releaseKeyPassword: String? = System.getenv("KEY_PASSWORD")
@@ -16,11 +16,11 @@ val hasReleaseSigning = listOf(releaseKeystorePath, releaseKeystorePassword, rel
     .all { !it.isNullOrBlank() } && file(releaseKeystorePath!!).exists()
 
 android {
-    namespace = "com.madak.spices.admin"
+    namespace = "com.yourtech.systeme.admin"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.madak.spices.admin"
+        applicationId = "com.yourtech.systeme.admin"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -66,7 +66,7 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            all { it.systemProperty("madak.screenshots.dir", layout.buildDirectory.dir("outputs/screenshots").get().asFile.absolutePath) }
+            all { it.systemProperty("yt.screenshots.dir", layout.buildDirectory.dir("outputs/screenshots").get().asFile.absolutePath) }
         }
     }
 
@@ -75,7 +75,7 @@ android {
     }
 }
 
-base { archivesName.set("madak-admin") }
+base { archivesName.set("yourtech-admin") }
 
 kotlin {
     compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }

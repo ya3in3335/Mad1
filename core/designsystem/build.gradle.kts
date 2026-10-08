@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.madak.spices.designsystem"
+    namespace = "com.yourtech.systeme.designsystem"
     compileSdk = 36
 
     defaultConfig { minSdk = 24 }

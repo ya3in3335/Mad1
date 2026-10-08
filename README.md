@@ -1,12 +1,14 @@
 <div align="center">
 
-<img src="docs/brand/madak-icon-512.png" width="120" alt="Madak logo" />
+<img src="docs/brand/yourtech-icon-512.png" width="120" alt="YOURTECH SYSTEME logo" />
 
-# MADAK SPICES · مذاق لتوابل
+# YOURTECH SYSTEME — Smart Security Solutions
 
-**Premium Arabic-first (RTL) spice store for Android, plus a separate Admin app (لوحة التحكم).**
+**An Android app for a security-systems company, plus a separate secure Admin app (لوحة التحكم).**
 
 Kotlin · Jetpack Compose · Material 3 · MVVM · Hilt · Room · Retrofit · Coil · Navigation Compose
+
+العربية (RTL, default) · Français · English
 
 </div>
 
@@ -17,274 +19,249 @@ Kotlin · Jetpack Compose · Material 3 · MVVM · Hilt · Room · Retrofit · C
 1. [Overview](#overview)
 2. [Screenshots](#screenshots)
 3. [Features](#features)
-4. [Tech stack](#tech-stack)
-5. [Project structure](#project-structure)
-6. [Local development](#local-development)
-7. [Android Studio setup](#android-studio-setup)
-8. [GitHub Actions workflow](#github-actions-workflow)
-9. [Downloading the APK](#downloading-the-apk)
-10. [Release builds & secrets](#release-builds--secrets)
-11. [Admin architecture & security](#admin-architecture--security)
-12. [Backend integration (Firebase / Supabase)](#backend-integration-firebase--supabase)
-13. [Store configuration checklist](#store-configuration-checklist)
+4. [Content and verification rules](#content-and-verification-rules)
+5. [Tech stack](#tech-stack)
+6. [Project structure](#project-structure)
+7. [Local development](#local-development)
+8. [GitHub Actions and downloading the APKs](#github-actions-and-downloading-the-apks)
+9. [Release builds and secrets](#release-builds-and-secrets)
+10. [Admin security](#admin-security)
+11. [Backend integration (required for production)](#backend-integration-required-for-production)
+12. [Company configuration checklist](#company-configuration-checklist)
+13. [Credits and licences](#credits-and-licences)
 
 ---
 
 ## Overview
 
-The repository builds **two APKs** from one Gradle project:
-
 | App | Module | Application ID | Purpose |
 |---|---|---|---|
-| **Madak Spices** | `:app` | `com.madak.spices` | Customer shopping app (Arabic RTL default, French available) |
-| **Madak Admin** | `:admin` | `com.madak.spices.admin` | Back-office app: products, orders, inventory, statistics… |
+| **YOURTECH SYSTEME** | `:app` | `com.yourtech.systeme` | Customer app: solutions, equipment catalog, installation, maintenance and quotation requests with tracking, portfolio, contact |
+| **YOURTECH Admin** | `:admin` | `com.yourtech.systeme.admin` | Back office: requests, appointments, products, inventory, categories, services, portfolio, promotions, testimonials, business info, accounts, audit log |
 
-Both apps share the same data layer (`:core:data`) and design system (`:core:designsystem`), including
-the official Madak logo and the **motion-graphics splash with sound design**.
+Both apps share the data layer (`:core:data`) and the design system (`:core:designsystem`). The design system holds the official logo, the brand palette and the motion-graphics splash. The palette is deep navy `#071426`, security blue `#176BFF`, electric cyan `#00D9FF` and dark surfaces `#101F35`.
 
-> **The catalogue starts empty.** No demo products, prices, offers or orders are shipped. The store
-> is created with three category shelves (توابل أساسية، خلطات مذاق، أعشاب) and the owner adds the
-> real products from the Admin app.
+**Company (default data, editable in Admin → Business info):**
+- Address: YOURTECH SYSTEME, Bir El Djir, Oran, Algeria. GPS: 35.7190252, -0.5664739.
+- Phone / WhatsApp: +213 561 03 41 49.
+- Hours: Saturday–Thursday 08:00–17:30. Closed Friday.
 
 ## Screenshots
 
-These screens were rendered on the JVM by the automated UI smoke tests (`AppSmokeTest`, `AdminSmokeTest`).
+These screens were rendered on the JVM by the automated UI tests (`AppSmokeTest`, `AdminSmokeTest`).
 
-| Splash (motion) | | | |
+| Splash | Home | Solutions | CCTV solution |
 |---|---|---|---|
-| <img src="docs/screenshots/01_splash_chef.png" width="180"/> | <img src="docs/screenshots/02_splash_wordmark.png" width="180"/> | <img src="docs/screenshots/03_splash_leaf_shimmer.png" width="180"/> | <img src="docs/screenshots/04_splash_tagline.png" width="180"/> |
+| <img src="docs/screenshots/c01_splash.png" width="180"/> | <img src="docs/screenshots/c02_home.png" width="180"/> | <img src="docs/screenshots/c03_solutions.png" width="180"/> | <img src="docs/screenshots/c04_solution_cctv.png" width="180"/> |
 
-| Empty store | With a product | ماذا تطبخ اليوم؟ | Product |
+| Installation request | Request sent | Tracking | Contact |
 |---|---|---|---|
-| <img src="docs/screenshots/06_home_empty.png" width="180"/> | <img src="docs/screenshots/07_home_with_product.png" width="180"/> | <img src="docs/screenshots/08_cook_today.png" width="180"/> | <img src="docs/screenshots/10_product_detail.png" width="180"/> |
+| <img src="docs/screenshots/c07_request_form.png" width="180"/> | <img src="docs/screenshots/c08_request_sent.png" width="180"/> | <img src="docs/screenshots/c09_request_tracking.png" width="180"/> | <img src="docs/screenshots/c11_contact.png" width="180"/> |
 
-| Cart | Checkout | Tracking | Profile |
+| Admin: owner setup | Dashboard | Services (confirm) | Product editor |
 |---|---|---|---|
-| <img src="docs/screenshots/11_cart.png" width="180"/> | <img src="docs/screenshots/13_checkout.png" width="180"/> | <img src="docs/screenshots/15_tracking.png" width="180"/> | <img src="docs/screenshots/16_profile.png" width="180"/> |
-
-| Admin – first-run setup | Admin – dashboard | Admin – navigation |
-|---|---|---|
-| <img src="docs/screenshots/a02_admin_setup.png" width="180"/> | <img src="docs/screenshots/a03_admin_dashboard.png" width="180"/> | <img src="docs/screenshots/a04_admin_drawer.png" width="180"/> |
+| <img src="docs/screenshots/a02_owner_setup.png" width="180"/> | <img src="docs/screenshots/a03_dashboard.png" width="180"/> | <img src="docs/screenshots/a04_services.png" width="180"/> | <img src="docs/screenshots/a05_product_editor.png" width="180"/> |
 
 ## Features
 
-### Customer app (`:app`)
-- **Motion-graphics splash** built from the original logo layers (chef, wordmark, leaf), never redrawn or
-  distorted: golden ring and magenta glow, the chef pops in, a spice-particle burst, grains fall from the
-  chef's hand into the pot, the wordmark is revealed right-to-left, the leaf grows from its stem, a light
-  shimmer sweeps across, then the *MADAK SPICES* tagline.
-  It's synced to a **synthesized sound design** (`res/raw/madak_intro.wav`: whoosh → boom → sprinkle →
-  thump → leaf pluck → sparkle → warm chord) with a haptic tick when the wordmark lands. The sound is muted
-  when the phone is in silent/vibrate mode and can be turned off in *حسابي*. Tap to skip.
-- Onboarding (3 animated pages)
-- Home: greeting, search, offers carousel (shown only when offers exist), *ماذا تطبخ اليوم؟*, categories,
-  best sellers, featured products, pull-to-refresh, skeleton loading, empty-store state
-- Product catalogue with category filters and sorting, search with debounce, favorites
-- Product details with **50 g / 100 g / 250 g / 500 g** variants, stock status, quantity, DZD pricing
-- **ماذا تطبخ اليوم؟**: دجاج، لحم، سمك، أرز، سلطة، شوربة، مشاوي. Recommendations are matched by keyword
-  against the real catalogue (Arabic and French names/tags), with a chef tip and *أضف إلى السلة* /
-  *أضف الكل إلى السلة*
-- Cart: add, remove (with undo), quantity, **change weight**, subtotal, delivery fee, total, free-delivery progress
-- Checkout: الاسم الكامل، رقم الهاتف (Algerian validation)، الولاية (58 wilayas, searchable sheet)، البلدية،
-  العنوان، ملاحظات · **الدفع عند الاستلام** · **توصيل للمنزل**
-- Order confirmation (animated), orders list, **order tracking timeline**
-  (NEW → CONFIRMED → PREPARING → OUT_FOR_DELIVERY → DELIVERED / CANCELLED); cancel while NEW
-- In-app notifications center + Android system notifications
-- Profile, language switch **العربية / Français**, About Madak, store location, contact (TikTok, and
-  WhatsApp/phone/Instagram/e-mail once configured)
-- Animations: fade/scale/slide navigation, animated cart badge, bounce clicks, haptic feedback
-- Fully **offline**: Room is the single source of truth, and network failures never crash the app
+### Customer app
+- **Motion-graphics splash.** It draws the official logo: the circuit "Y" is drawn by a scan line, the nodes pulse, then the bar and the wordmark appear over a radar grid, with the tagline "Smart Security Solutions".
+- **Home dashboard:**
+  - hero section with shortcuts for installation, support, consultation, WhatsApp and call;
+  - live open/closed status (Algiers time zone);
+  - featured security solutions and equipment;
+  - offers, verified testimonials and published projects, each shown only when present;
+  - visit card with an offline OpenStreetMap preview.
+- **Security solutions:** CCTV, alarms, access control (RFID/NFC and biometrics), smart security, intercom, and installation/maintenance. Each solution has an animated vector illustration, a description, benefits, use cases and specs. Each also has buttons to **request a quote**, **request an installation** or **contact a technician** on WhatsApp.
+- **Equipment catalog:**
+  - search, category filters and favorites;
+  - each product shows its photo, brand/model, specs, price in DZD (or "price on request"), stock status, warranty and installation availability;
+  - quote request and WhatsApp inquiry buttons.
+- **Requests** (installation, maintenance/support, consultation, quote):
+  - validated forms: Algerian phone format, all 58 wilayas with search, commune, address, property type, system or equipment, number of devices, preferred date, notes, and up to 6 photos;
+  - tracking timeline: Submitted → Under review → Quotation prepared → Approved → Scheduled → In progress → Completed;
+  - cancellation while the request is still Submitted;
+  - local notifications.
+- **Hand-off to the company:** each request gets a reference such as `YT-INS-261008-1234`. The customer sends it to YOURTECH in one tap as a pre-filled WhatsApp message, and can share the photos too.
+- **Portfolio:** only projects marked as both *client-permission confirmed* and *published* appear.
+- **Contact:** map, Google Maps directions, WhatsApp, call, email, weekly hours (Friday closed) and social links, each shown only when set.
+- Language switch (AR/FR/EN), full RTL, accessible touch targets, skeleton loading and empty states.
 
-### Admin app (`:admin`)
-- Same motion splash with a *لوحة التحكم* badge
-- **First-run owner setup**: no default or hardcoded credentials; strong passphrase policy
-- Dashboard: **today's orders, today's sales, pending orders, completed orders, best-selling products**,
-  low-stock alert
-- Orders (filter by status, details, call customer, move along the lifecycle, cancel with stock restore)
-- Products (add/edit; prices for 50/250/500 g derived from the 100 g price; activate/deactivate)
-- Categories, Inventory (±1 / +10, low-stock filter), Customers, Offers, Notifications broadcast
-- Settings & security (change passphrase, logout)
+### Admin app
+- **First launch** forces creation of the owner account. There are **no default credentials**.
+- **Roles:**
+
+  | Role | Access |
+  |---|---|
+  | Owner | Everything |
+  | Manager | Everything except accounts |
+  | Sales staff | Requests, appointments, products, inventory |
+  | Technician | Requests, appointments |
+
+- **Dashboard:** today's requests, awaiting review, open, today's appointments, completed, quick actions and latest requests.
+- **Requests:**
+  - filter by status and type;
+  - customer call/WhatsApp;
+  - status transitions (forward only, cancel until work starts) with a note for the customer;
+  - appointment date and time, quote amount, assigned technician and company note;
+  - timeline.
+- **Appointments** grouped by day.
+- **Catalog:**
+  - products: create/edit/delete, gallery photo, https URL or illustration;
+  - inventory: stock status and quantity;
+  - equipment categories;
+  - **service categories**: trilingual content plus an activation switch, so a service is shown to customers only after the company confirms it.
+- **Content:**
+  - portfolio: approved photos only; publishing is blocked until client permission is ticked; general location only;
+  - promotions with duration;
+  - testimonials: hidden until verified;
+  - **business info**: validated phone numbers, https-only links, email, coordinates and weekly hours.
+- **Settings:** change password, accounts (create with a temporary password, enable/disable, reset), **audit log** and logout.
+
+## Content and verification rules
+
+The apps follow the brief's rules. **Nothing has been invented.**
+
+- **No fake data:**
+  - **No products, prices, brands, stock levels or warranties are shipped.** The catalog starts empty and the company fills it in from the Admin app.
+  - **No projects, testimonials, ratings or promotions are shipped.**
+  - No social links are pre-filled. They appear only once entered in Admin.
+- **Services are a proposal.** Six common categories are active. Two of them, *gates and barriers* and *security consulting*, are present but **hidden** until confirmed. The company must review all of them in Admin → Catalog → Services and disable any it does not offer.
+- **Visuals:** the app uses animated **vector illustrations** instead of stock photos. The stock photos I found showed specific brands (e.g. Hikvision, ANNKE) or random street cameras, which would suggest a partnership or work that does not exist. Real product and project photos are uploaded from the Admin app.
+- **Portfolio privacy:** it never shows live camera feeds, exact addresses, access codes or identifiable customer information. The admin UI reminds staff of this, and the data layer refuses to publish without client permission.
+- **Company details:** all of them (name, phone, address, GPS, hours) are configurable data and **must be re-verified before production**.
 
 ## Tech stack
 
 | Area | Library |
 |---|---|
-| Language / build | Kotlin 2.2, Gradle 8.14 (Kotlin DSL + version catalog), AGP 8.13 |
-| UI | Jetpack Compose (BOM 2025.10), Material 3, Navigation Compose, core-splashscreen |
-| Architecture | MVVM, unidirectional state with `StateFlow`, Coroutines/Flow |
-| DI | Hilt (KSP) |
-| Persistence | Room 2.7 (KSP), DataStore Preferences |
-| Network | Retrofit 2 + OkHttp + Gson (optional backend) |
-| Images | Real product photos bundled offline (matched by product name, CC BY/BY-SA, see `docs/brand/PHOTO_CREDITS.md`) + Coil for image URLs |
-| Tests | JUnit 4, Robolectric + Compose UI test (end-to-end smoke tests on the JVM) |
-| SDK | `minSdk 24`, `compileSdk/targetSdk 36` |
-| Font | Tajawal (SIL OFL, `docs/brand/Tajawal-OFL.txt`) |
+| Language / build | Kotlin 2.2, AGP 8.13, Gradle 8.14 (version catalog), JDK 17 |
+| UI | Jetpack Compose (BOM 2025.10), Material 3, Navigation Compose |
+| Architecture | MVVM, Hilt DI, Kotlin Flow / StateFlow, Repository pattern |
+| Storage | Room 2.7 (single schema shared by both apps) |
+| Network (ready) | Retrofit 2.11 + Gson (`YourTechApi`) |
+| Images | Coil 2.7; Photo Picker plus re-encoding through `ImageImporter` |
+| Tests | JUnit 4, Robolectric 4.16, Compose UI test |
+
+minSdk 24 · target/compile SDK 36.
 
 ## Project structure
 
 ```
-.
-├── app/                         # Customer app (com.madak.spices)
-│   └── src/main/java/com/madak/spices/
-│       ├── MainActivity.kt      # locale (ar default) + edge-to-edge + splash API
-│       ├── navigation/          # NavHost, bottom bar (الرئيسية، المنتجات، السلة، الطلبات، حسابي)
-│       ├── feature/             # splash, home, catalog, cook, cart, orders, profile (screens + ViewModels)
-│       └── ui/                  # shared UI, formatting, intents, notifications
-├── admin/                       # Admin app (com.madak.spices.admin)
-│   └── src/main/java/com/madak/spices/admin/
-│       ├── auth/                # PBKDF2 hashing, owner account, roles/permissions, lockout
-│       ├── feature/             # dashboard, orders, catalogue, inventory, customers, offers, notifications
-│       └── ui/                  # shell (drawer), shared admin UI
-├── core/
-│   ├── data/                    # Room entities/DAOs/DB, repositories, models, Retrofit API, Hilt modules
-│   └── designsystem/            # theme, components, logo assets, MadakMotionSplash, intro sound
-├── docs/
-│   ├── brand/                   # original logo, icon, font licence, sound generator script
-│   └── screenshots/
-├── .github/workflows/android.yml
-└── gradle/libs.versions.toml
+app/                     Customer app (com.yourtech.systeme)
+  feature/home           Home dashboard, open status, visit card, map
+  feature/solutions      Security solution list + detail
+  feature/products       Catalog, product detail, favorites
+  feature/requests       Request form, list, tracking, WhatsApp message
+  feature/more           More, contact, about, privacy, notifications, portfolio
+  navigation/            NavHost + bottom navigation
+admin/                   Admin app (com.yourtech.systeme.admin)
+  auth/                  PBKDF2 hashing, accounts, roles/permissions, lock-out
+  data/AdminRepository   Permission check → validation → write → audit log
+  feature/               Auth, dashboard, requests, catalog, content, settings
+core/data/               Room entities/DAOs, repositories, validation, business hours, seed, image importer, API contract
+core/designsystem/       Theme, logo, components, illustrations, splash, Tajawal font
+docs/brand/              Original logo, launcher icons, font licence
 ```
-
-**Room models:** User, Category, Product, ProductVariant, Cart, CartItem, Order, OrderItem,
-OrderStatusEvent, Address, Favorite, Notification, Offer.
 
 ## Local development
 
-Requirements: **JDK 17+** and the **Android SDK** (platform 36, build-tools 36).
-
 ```bash
-git clone https://github.com/ya3in3335/Mad1.git
-cd Mad1
-echo "sdk.dir=$HOME/Android/Sdk" > local.properties   # path to your SDK (not committed)
-
-./gradlew testDebugUnitTest    # unit tests + Robolectric UI smoke tests
-./gradlew assembleDebug        # builds both APKs
+# Android Studio Ladybug+ or command line with JDK 17 and Android SDK 36
+./gradlew testDebugUnitTest     # unit tests + Robolectric UI smoke tests (writes screenshots)
+./gradlew assembleDebug         # app/build/outputs/apk/debug/yourtech-systeme-debug.apk
+                                # admin/build/outputs/apk/debug/yourtech-admin-debug.apk
 ```
 
-Outputs:
-- `app/build/outputs/apk/debug/madak-spices-debug.apk`
-- `admin/build/outputs/apk/debug/madak-admin-debug.apk`
+Screenshots from the smoke tests go to `*/build/outputs/screenshots/`.
 
-The UI smoke tests also write screenshots to `app/build/outputs/screenshots/` and `admin/build/outputs/screenshots/`.
+## GitHub Actions and downloading the APKs
 
-## Android Studio setup
+`.github/workflows/android.yml` runs on every push and pull request:
 
-1. *File → Open…* and select the repository root.
-2. Let Gradle sync (Android Studio uses the bundled JDK 17/21).
-3. Pick the **app** or **admin** run configuration and press ▶.
-4. The debug builds use the `.debug` application-id suffix, so they can be installed next to release builds.
+1. JDK 17, Android SDK 36, Gradle cache.
+2. `testDebugUnitTest` (unit and UI smoke tests).
+3. `assembleDebug`.
+4. Uploads the artifacts **`yourtech-systeme-debug-apk`**, **`yourtech-admin-debug-apk`** and `test-reports` (reports and screenshots).
 
-## GitHub Actions workflow
+**Download:** GitHub → *Actions* → latest green run → *Artifacts* → download the zip → install the APK. On the phone, allow "install unknown apps".
 
-`.github/workflows/android.yml` runs on **every push** (including `main`), on pull requests to `main`,
-and manually (*workflow_dispatch*):
+## Release builds and secrets
 
-1. Checkout → JDK 17 (Temurin) → Android SDK → Gradle (with dependency/build cache)
-2. `./gradlew testDebugUnitTest`: unit tests and UI smoke tests (**fails the build on any failure**)
-3. `./gradlew assembleDebug`
-4. Uploads artifacts:
-   - **`madak-spices-debug-apk`**: customer app
-   - **`madak-admin-debug-apk`**: admin app
-   - `test-reports`: HTML reports and smoke-test screenshots
+The `release` job runs on `main` only when these repository secrets exist. **Nothing secret is stored in the repository.**
 
-A second job builds **signed release APKs** on pushes to `main`, but only when the signing secrets exist.
-Without them it is skipped, and the debug build always works.
-
-No step hides failures (no `|| true`), and no test is disabled.
-
-## Downloading the APK
-
-1. Open the repository on GitHub → **Actions** → **Android CI**.
-2. Click the latest successful run.
-3. In **Artifacts**, download **madak-spices-debug-apk** (and/or **madak-admin-debug-apk**).
-4. Unzip, copy the `.apk` to the phone and install it (allow *Install unknown apps*).
-
-## Release builds & secrets
-
-Signing keys are **never committed** (`*.jks`, `*.keystore`, `keystore.properties` are git-ignored).
-Release signing is configured only when all values are provided as environment variables.
-
-Create a keystore once:
-
-```bash
-keytool -genkeypair -v -keystore madak-release.jks -alias madak -keyalg RSA -keysize 4096 -validity 10000
-base64 -w0 madak-release.jks > keystore.b64     # macOS: base64 -i madak-release.jks
-```
-
-Add these **GitHub Secrets** (*Settings → Secrets and variables → Actions*):
-
-| Secret | Value |
+| Secret | Content |
 |---|---|
-| `KEYSTORE_BASE64` | content of `keystore.b64` |
-| `KEYSTORE_PASSWORD` | keystore password |
-| `KEY_ALIAS` | key alias (e.g. `madak`) |
-| `KEY_PASSWORD` | key password |
+| `KEYSTORE_BASE64` | `base64 -w0 yourtech-release.jks` |
+| `KEYSTORE_PASSWORD` | Keystore password |
+| `KEY_ALIAS` | Key alias |
+| `KEY_PASSWORD` | Key password |
 
-Local signed build:
-
-```bash
-export MADAK_KEYSTORE_PATH=/path/to/madak-release.jks KEYSTORE_PASSWORD=… KEY_ALIAS=madak KEY_PASSWORD=…
-./gradlew assembleRelease
-```
-
-Release builds use R8 minification and resource shrinking.
-
-## Admin architecture & security
-
-- **Separate APK** (`com.madak.spices.admin`) so customers never receive back-office code.
-- **No hardcoded credentials.** On first launch the owner creates a passphrase (≥ 8 characters, letters
-  and digits). Only a salted **PBKDF2** hash is stored (HMAC-SHA256, 120 000 iterations; SHA-1 variant on
-  API 24–25 where SHA-256 is unavailable).
-- Lock-out after 5 failed attempts (30 s, doubling, max 15 min); auto-lock after 5 minutes in background.
-- `FLAG_SECURE` (no screenshots or recents preview); backups and device transfer disabled.
-- **Role-based permissions** (`OWNER`, `MANAGER`, `STAFF` × products, categories, orders, customers,
-  inventory, offers, notifications, statistics, settings), ready to be mapped to server-side claims.
-
-> ⚠️ **Important: shared data needs a backend.** Each Android app has its own private database, so
-> products created in the Admin app, and orders placed in the customer app, stay on the device where they
-> were created. To run the real store (owner adds products → customers see them → owner receives orders),
-> connect a shared backend as described below. `MadakApi` and `RemoteConfig` already define the contract.
-
-## Backend integration (Firebase / Supabase)
-
-The app is offline-first: Room stays the source of truth and a backend synchronises it.
-
-1. Set `MADAK_API_BASE_URL` in `core/data/build.gradle.kts` (remote calls are disabled while it points to
-   the placeholder `.example` domain).
-2. Implement the endpoints declared in `core/data/.../remote/MadakApi.kt`:
-   `GET v1/catalog` (products, variants, prices, stock) and `POST v1/orders`.
-3. Admin writes become API calls in `AdminRepository`, `OfferRepository` and `NotificationRepository`.
-
-**Supabase:** tables mirroring the Room entities; Row-Level Security with an `admin_role` claim; Supabase
-Auth for the admin login (replace `AdminAuthRepository`); Edge Functions for `v1/catalog` / `v1/orders`;
-Storage for product photos (`ProductEntity.imageUrl`, loaded with Coil).
-
-**Firebase:** Firestore collections for the same entities; Firebase Auth with custom claims for roles;
-Cloud Functions for order lifecycle notifications; **FCM** for push (the `orders` notification channel
-already exists); Firebase Storage for images. Add `google-services.json` locally/through CI secrets
-(it is git-ignored).
-
-## Store configuration checklist
-
-Store details live in `core/data/src/main/java/com/madak/spices/data/model/StoreInfo.kt`.
-Current values come from the official TikTok account [@madak.spices](https://www.tiktok.com/@madak.spices)
-(*Madak Spices-مذاق للتوابل*): TikTok link, slogan, and location near the M Suite hotel in Dar El Beïda, Algiers.
-
-Phone and WhatsApp: **+213 664 71 70 29** (provided by the store owner).
-Instagram, e-mail and opening hours are not published yet, so they are left empty and their buttons are
-hidden; filling them in makes the buttons appear automatically.
-Delivery fees and the free-delivery threshold are in `Pricing.kt`.
-
----
-
-<div align="center">مذاق لتوابل — سرّ النكهة في مطبخك 🌿</div>
-
-## Promo video
-
-`docs/promo/make_promo.py` renders a 25 s vertical (1080×1920) motion-graphics ad from the real logo layers
-and real app screens, with an original synthesized soundtrack:
+Create a keystore with:
 
 ```bash
-./gradlew :app:testDebugUnitTest -PmadakAd=true --tests "*AdScreenshotsTest"   # app screens with an illustrative catalogue
-python3 docs/promo/make_promo.py . app/build/outputs/screenshots/ad madak-promo.mp4
+keytool -genkeypair -v -keystore yourtech-release.jks -alias yourtech -keyalg RSA -keysize 4096 -validity 10000
 ```
+
+## Admin security
+
+- **No hardcoded credentials.** The owner is created at first launch and later accounts get temporary passwords that **must be changed** at first sign-in.
+- **Password hashing:** salted **PBKDF2-HMAC-SHA256** (SHA-1 variant only on API 24–25), 120,000 iterations, constant-time comparison. Policy: at least 8 characters with a letter and a digit.
+- **Brute-force protection:**
+  - after 5 failed attempts the account locks for 30 s, doubling up to 15 min;
+  - unknown usernames get the same response and timing as wrong passwords, so the screen cannot be used to discover usernames.
+- **Authorization is checked twice:**
+  - at the **route level** (screens hidden or blocked);
+  - again in `AdminRepository` before **every write**.
+- **Audit log** of logins, failed logins, password changes, account changes and every create/update/delete.
+- **Input validation** before any write:
+  - names and lengths;
+  - Algerian phone numbers;
+  - https-only URLs;
+  - email;
+  - GPS range;
+  - price and quantity range;
+  - control characters are stripped.
+- **Secure image uploads:**
+  - Android Photo Picker, so no storage permission is needed;
+  - MIME allow-list (JPEG/PNG/WEBP/HEIC) and a 20 MB cap;
+  - the image is decoded and re-encoded to JPEG at 1600 px or less, **which removes EXIF and GPS metadata**;
+  - files get random names in app-private storage;
+  - deletion is restricted to that folder.
+- **Device protections:**
+  - `FLAG_SECURE`: no screenshots, screen recording or recents preview;
+  - **auto-lock** after 5 minutes in the background;
+  - backups and device transfer are disabled (`allowBackup=false` plus data extraction rules).
+
+## Backend integration (required for production)
+
+> ⚠️ **Important:** for now each app keeps its own on-device Room database. Products added in Admin do **not** reach customers' phones, and requests submitted by customers do **not** reach the Admin app automatically. Until a backend is added:
+> - requests reach the company through the pre-filled **WhatsApp** message (with reference and details) and shared photos;
+> - the Admin app works as a single-device back office.
+
+Recommended: **Supabase** (Postgres + Row Level Security + Storage) or **Firebase** (Firestore + Security Rules + Storage + Auth custom claims).
+
+1. Implement `core/data/remote/YourTechApi`, or use the vendor SDKs. The base URL comes from `BuildConfig.YT_API_BASE_URL`; inject it from CI, never commit keys.
+2. Make the repositories sync: Room becomes a cache, and the server is the source of truth.
+3. Move admin authentication to the backend (Supabase Auth / Firebase Auth). Map `AdminRole` to server claims and enforce the **same permissions in RLS / Security Rules**. Never trust the client.
+4. Customers submit requests to a `service_requests` table that only they can read, and staff can read according to role. Store photos in a private bucket with signed URLs.
+5. Push status changes with FCM.
+
+## Company configuration checklist
+
+Before publishing, in **Admin**:
+
+- [ ] Business info: verify phone, WhatsApp, address in all 3 languages, GPS, hours, email, social links.
+- [ ] Services: confirm each category; disable what YOURTECH does not provide; edit the texts.
+- [ ] Equipment categories: adjust to the real catalog.
+- [ ] Products: real names, brands, prices, stock and warranty only.
+- [ ] Portfolio: only approved photos, with written client permission.
+- [ ] Testimonials: only real, verified customers.
+- [ ] Create staff and technician accounts with the right roles.
+
+## Credits and licences
+
+- Logo © YOURTECH SYSTEME (supplied by the company).
+- Tajawal font, SIL Open Font License 1.1 (`docs/brand/Tajawal-OFL.txt`).
+- Map preview © OpenStreetMap contributors (ODbL); the attribution is shown on the map.
+- Security illustrations are original vector drawings made in Compose (`SecurityIllustration`).

@@ -20,7 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MadakSpices"
+rootProject.name = "YourTechSysteme"
 
 include(":app")
 include(":admin")

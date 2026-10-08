@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#0E0C0B</color>
-    <color name="madak_ink">#0E0C0B</color>
-
-    <!-- System splash (Android 12+ API, back-ported by core-splashscreen): black with the Madak mark,
-         immediately followed by the animated Compose intro. -->
-    <style name="Theme.Madak.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/madak_ink</item>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="yt_navy">#071426</color>
+    <style name="Theme.YourTech.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/yt_navy</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">#FFFFFF</item>
         <item name="windowSplashScreenAnimationDuration">300</item>
-        <item name="postSplashScreenTheme">@style/Theme.Madak</item>
+        <item name="postSplashScreenTheme">@style/Theme.YourTech</item>
     </style>
-
-    <style name="Theme.Madak" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/madak_ink</item>
+    <style name="Theme.YourTech" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/yt_navy</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
